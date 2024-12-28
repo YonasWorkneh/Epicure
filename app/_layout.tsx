@@ -33,11 +33,10 @@ const RootLayout = () => {
   }
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <StatusBar />
+      <StatusBar backgroundColor="yellow" />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="welcome" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+      <Stack.Screen name="profile" options={{ headerShown: false }} />
     </Stack>
   );
 };

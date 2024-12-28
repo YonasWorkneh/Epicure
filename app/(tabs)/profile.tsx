@@ -1,21 +1,12 @@
-import tw from "twrnc";
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { View, Text } from "react-native";
 
-const profile = () => {
+const Profile = () => {
   return (
-    <View style={tw`flex-1 font-`}>
-      <Text>profile</Text>
+    <View>
+      <Text>Profile Screen</Text>
     </View>
   );
 };
 
-export default profile;
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});
+export default Profile;
