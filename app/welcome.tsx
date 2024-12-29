@@ -1,8 +1,8 @@
 import tw from "twrnc";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, StatusBar } from "react-native";
 import React, { useEffect } from "react";
 import images from "../constants/images";
-import { Link, useRouter } from "expo-router";
+import { Link, SplashScreen, useRouter } from "expo-router";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 import {
   widthPercentageToDP as wp,
@@ -10,6 +10,7 @@ import {
 } from "react-native-responsive-screen";
 import CustomButton from "@/components/customButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function index() {
   const outerRingPadding = useSharedValue(0);
@@ -19,10 +20,11 @@ export default function index() {
   useEffect(function () {
     const checkIfFirstTime = async () => {
       const hasLaunched = await AsyncStorage.getItem("hasLaunched");
-      if (hasLaunched) router.push("/(tabs)/home");
+      // if (hasLaunched) router.push("/(tabs)/home");
     };
     checkIfFirstTime();
   }, []);
+  (async () => await SplashScreen.preventAutoHideAsync())();
 
   useEffect(() => {
     innerRingPadding.value = 0;
@@ -36,7 +38,7 @@ export default function index() {
   }, []);
 
   return (
-    <View style={tw`flex-1 items-center justify-center bg-amber-500`}>
+    <SafeAreaView style={tw`flex-1 items-center justify-center bg-amber-500`}>
       <View style={tw`mb-10`}>
         <Animated.View
           style={[tw`rounded-full bg-white/20`, { padding: outerRingPadding }]}
@@ -70,10 +72,11 @@ export default function index() {
             router.push("/(auth)/signup");
             AsyncStorage.setItem("hasLaunched", "true");
           }}
-          backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-lg"
+          backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-full"
           textStyles="text-center text-white text-md"
         />
       </View>
-    </View>
+      <StatusBar barStyle={"dark-content"} backgroundColor="rgb(245 158 11)" />
+    </SafeAreaView>
   );
 }

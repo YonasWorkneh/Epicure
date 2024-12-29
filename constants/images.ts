@@ -1,3 +1,4 @@
 import meal from "../assets/images/meal.avif";
 import foodsvg from "../assets/images/food.png";
-export default { meal, foodsvg };
+import signUpBg from "../assets/images/bg.jpg";
+export default { meal, foodsvg, signUpBg };

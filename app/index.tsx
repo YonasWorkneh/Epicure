@@ -10,6 +10,7 @@ import {
 } from "react-native-responsive-screen";
 import CustomButton from "@/components/customButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function index() {
   const outerRingPadding = useSharedValue(0);
@@ -37,7 +38,7 @@ export default function index() {
   }, []);
 
   return (
-    <View style={tw`flex-1 items-center justify-center bg-amber-500`}>
+    <SafeAreaView style={tw`flex-1 items-center justify-center bg-amber-500`}>
       <View style={tw`mb-10`}>
         <Animated.View
           style={[tw`rounded-full bg-white/20`, { padding: outerRingPadding }]}
@@ -71,11 +72,11 @@ export default function index() {
             router.push("/(auth)/signup");
             AsyncStorage.setItem("hasLaunched", "true");
           }}
-          backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-lg"
-          textStyles="text-center text-white text-lg"
+          backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-full"
+          textStyles="text-center text-white text-md"
         />
       </View>
-      <StatusBar className="dark" backgroundColor="#000" />
-    </View>
+      <StatusBar barStyle={"dark-content"} backgroundColor="rgb(245 158 11)" />
+    </SafeAreaView>
   );
 }
