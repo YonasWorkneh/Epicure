@@ -17,7 +17,7 @@ module.exports = {
         pblack: ["Poppins-Black", "sans-serif"],
       },
       boxShadow: {
-        "3xl": "0 10px 10px 105px #000",
+        custom: "1px 90px 20px #000",
       },
     },
   },

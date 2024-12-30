@@ -1,7 +1,13 @@
 import { StatusBar, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import changeNavigationBarColor, {
+  hideNavigationBar,
+} from "react-native-navigation-bar-color";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -23,6 +29,11 @@ const RootLayout = () => {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
+
+  useEffect(() => {
+    // changeNavigationBarColor("rgb(245 158 11)", true, true);
+    // hideNavigationBar();
+  });
 
   if (!fontsLoaded) {
     return null;

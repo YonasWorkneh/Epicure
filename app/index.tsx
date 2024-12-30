@@ -2,7 +2,7 @@ import tw from "twrnc";
 import { View, Text, Image, StatusBar } from "react-native";
 import React, { useEffect } from "react";
 import images from "../constants/images";
-import { Link, SplashScreen, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 import {
   widthPercentageToDP as wp,
@@ -11,6 +11,8 @@ import {
 import CustomButton from "@/components/customButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+
 
 export default function index() {
   const outerRingPadding = useSharedValue(0);
@@ -24,7 +26,6 @@ export default function index() {
     };
     checkIfFirstTime();
   }, []);
-  (async () => await SplashScreen.preventAutoHideAsync())();
 
   useEffect(() => {
     innerRingPadding.value = 0;
