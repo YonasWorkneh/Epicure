@@ -7,9 +7,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
 import CustomButton from "@/components/customButton";
 import { useRouter } from "expo-router";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import AuthForm from "@/components/AuthForm";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 export default function signup() {
   function handleSubmit() {} // Add your logic here
@@ -24,9 +25,12 @@ export default function signup() {
   return (
     <SafeAreaView style={tw`h-full bg-white`}>
       <ScrollView>
-        <View>
-          <Image source={images.signUpBg} style={tw`w-full h-85`} />
-        </View>
+        <Animated.View entering={FadeInRight.duration(1000)}>
+          <Image
+            source={images.signUpBg}
+            style={[tw`contain `,{ width: hp(50), height: hp(40) }]}
+          />
+        </Animated.View>
         <AuthForm
           title="Sign In"
           type="signin"

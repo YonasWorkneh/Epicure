@@ -11,6 +11,8 @@ import { ScrollView } from "react-native";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import Error from "@/components/error";
 import AuthForm from "@/components/AuthForm";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 
 export default function signup() {
   function handleSubmit() {}
@@ -31,9 +33,12 @@ export default function signup() {
           backgroundStyles="px-4 py-4 bg-white w-rfull"
           textStyles="text-amber-500 font-bold text-right"
         />
-        <View>
-          <Image source={images.signUpBg} style={tw`w-full h-85`} />
-        </View>
+        <Animated.View entering={FadeInRight.duration(1000)}>
+          <Image
+            source={images.signUpBg}
+            style={[tw`w-full`,{ width: hp(50), height: hp(40) }]}
+          />
+        </Animated.View>
         <AuthForm
           title="Create Account"
           type="signup"
