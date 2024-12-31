@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import tw from "twrnc";
-import CustomButton from "./customButton";
-import Error from "./error";
+import CustomButton from "./CustomButton";
+import Error from "./Error";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
@@ -46,7 +46,14 @@ export default function AuthForm({
         { boxShadow: "0px -40px 100px rgba(0, 0, 0, 0.387)" },
       ]}
     >
-      <Text style={tw`text-2xl font-bold text-amber-500 mb-10`}>{title}</Text>
+      <Text
+        style={[
+          tw`text-2xl font-bold text-amber-500 mb-10`,
+          { fontFamily: "Poppins-Bold" },
+        ]}
+      >
+        {title}
+      </Text>
       <View style={tw`mb-6`}>
         <Text
           style={tw`text-sm text-gray-500 mb-1 text-[12px] opacity-30 font-bold transition duration-1500 ${

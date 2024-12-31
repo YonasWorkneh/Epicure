@@ -5,11 +5,11 @@ import images from "@/constants/images";
 import { Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
-import CustomButton from "@/components/customButton";
+import CustomButton from "@/components/CustomButton";
 import { useRouter } from "expo-router";
 import { ScrollView } from "react-native";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
-import Error from "@/components/error";
+import Error from "@/components/Error";
 import AuthForm from "@/components/AuthForm";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
@@ -36,7 +36,7 @@ export default function signup() {
         <Animated.View entering={FadeInRight.duration(1000)}>
           <Image
             source={images.signUpBg}
-            style={[tw`w-full`,{ width: hp(50), height: hp(40) }]}
+            style={[tw`w-full`, { width: hp(50), height: hp(40) }]}
           />
         </Animated.View>
         <AuthForm

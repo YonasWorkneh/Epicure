@@ -3,10 +3,13 @@ import { TouchableOpacity, Text } from "react-native";
 import tw from "twrnc";
 
 type ButtonProps = {
-  text: string;
+  text?: string;
+  icon?: React.ReactNode;
   onPress?: () => void;
   backgroundStyles?: string;
   textStyles?: string;
+  textFont?: string;
+  tapOpacity?: number;
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -14,13 +17,22 @@ const CustomButton: React.FC<ButtonProps> = ({
   onPress,
   backgroundStyles,
   textStyles,
+  icon,
+  textFont,
+  tapOpacity,
 }) => {
   return (
     <TouchableOpacity
       style={tw`${backgroundStyles ? backgroundStyles : ""}`}
       onPress={onPress}
+      activeOpacity={tapOpacity}
     >
-      <Text style={tw`${textStyles ? textStyles : ""}`}>{text}</Text>
+      {icon ? icon : ""}
+      <Text
+        style={[tw`${textStyles ? textStyles : ""}`, { fontFamily: textFont }]}
+      >
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };

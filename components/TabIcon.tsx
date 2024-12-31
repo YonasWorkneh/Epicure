@@ -11,7 +11,7 @@ type AuthProps = {
 const TabItem = ({ focused, icon }: AuthProps) => {
   return (
     <View
-      style={tw`items-center justify-center w-15 h-15 rounded-full mt-8 ${
+      style={tw`items-center bg-none justify-center w-10 h-10 rounded-full mt-3 transition-bg duration-500 ${
         focused ? "bg-white/90" : ""
       }`}
     >

@@ -8,11 +8,9 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import CustomButton from "@/components/customButton";
+import CustomButton from "@/components/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-
 
 export default function index() {
   const outerRingPadding = useSharedValue(0);
@@ -59,13 +57,25 @@ export default function index() {
         </Animated.View>
       </View>
       <View style={tw`flex items-center space-y-10 justify-between px-10`}>
-        <Text style={tw`text-white text-5xl font-bold mb-8 `}>Epicure</Text>
-        <Text style={tw`text-center mb-20 text-[16px] text-center text-white`}>
+        <Text
+          style={[
+            tw`text-white text-5xl font-bold mb-8 py-5 `,
+            { fontFamily: "Poppins-Bold" },
+          ]}
+        >
+          Epicure
+        </Text>
+        <Text
+          style={[
+            tw`text-center mb-20 text-[16px] text-center text-white`,
+            { fontFamily: "Poppins-Bold" },
+          ]}
+        >
           Get over{" "}
-          <Text style={tw`font-extrabold text-3xl text-[#000] p-15`}>
+          <Text style={tw`font-extrabold text-2xl text-[#000] p-15`}>
             100k+{" "}
           </Text>
-          best recipes from across the globe and cook like a pro.
+          recipes from across the globe and cook like a pro.
         </Text>
         <CustomButton
           text="Get Started"
@@ -74,7 +84,9 @@ export default function index() {
             AsyncStorage.setItem("hasLaunched", "true");
           }}
           backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-full"
-          textStyles="text-center text-white text-md"
+          textStyles="text-center text-white text-m"
+          textFont="Poppins-Regular"
+          tapOpacity={0.8}
         />
       </View>
       <StatusBar barStyle={"dark-content"} backgroundColor="rgb(245 158 11)" />
