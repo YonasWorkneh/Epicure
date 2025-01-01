@@ -12,7 +12,7 @@ export default function TabBar({
   return (
     <View
       style={[
-        tw`flex-row items-center justify-between bg-white rounded-full absolute bottom-10`,
+        tw`flex-row items-center justify-between bg-white rounded-full absolute bottom-3`,
         {
           shadowColor: "#0000009b",
           shadowOffset: { width: 0, height: 10 },
@@ -26,7 +26,8 @@ export default function TabBar({
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
-          options.tabBarLabel !== undefined
+          options.tabBarLabel !== undefined &&
+          typeof options.tabBarLabel === "string"
             ? options.tabBarLabel
             : options.title !== undefined
             ? options.title

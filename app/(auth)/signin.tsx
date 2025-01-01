@@ -28,7 +28,7 @@ export default function signup() {
         <Animated.View entering={FadeInRight.duration(1000)}>
           <Image
             source={images.signUpBg}
-            style={[tw`contain `, { width: hp(50), height: hp(40) }]}
+            style={[tw`contain object-center `, { width: hp(50), height: hp(40) }]}
           />
         </Animated.View>
         <AuthForm

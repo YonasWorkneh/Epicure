@@ -15,6 +15,7 @@ import changeNavigationBarColor, {
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
+import { TabContextProvider } from "@/contexts/TabContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -57,23 +58,25 @@ const RootLayout = () => {
     return null;
   }
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <ScrollView onScroll={handleScroll}>
-        {scrollY > 0 && (
-          <LinearGradient
-            colors={["rgba(217, 12, 12, 0.3)", "transparent"]}
-            style={tw`absolute top-0 left-0 right-0 h-20`}
+    <TabContextProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <ScrollView onScroll={handleScroll}>
+          {scrollY > 0 && (
+            <LinearGradient
+              colors={["rgba(217, 12, 12, 0.3)", "transparent"]}
+              style={tw`absolute top-0 left-0 right-0 h-20`}
+            />
+          )}
+          <StatusBar
+            backgroundColor="rgb(245 158 11)"
+            barStyle={"light-content"}
           />
-        )}
-        <StatusBar
-          backgroundColor="rgb(245 158 11)"
-          barStyle={"light-content"}
-        />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="profile" options={{ headerShown: false }} />
-      </ScrollView>
-    </Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="profile" options={{ headerShown: false }} />
+        </ScrollView>
+      </Stack>
+    </TabContextProvider>
   );
 };
 

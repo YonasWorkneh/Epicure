@@ -6,6 +6,7 @@ import tw from "twrnc";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
 import images from "../../constants/images";
+import MenuIcon from "@/components/MenuIcon";
 
 export default function profile() {
   return (
@@ -24,12 +25,4 @@ export default function profile() {
   );
 }
 
-const MenuIcon = () => {
-  return (
-    <View style={tw`flex flex-col justify-center w-5 h-10 `} aria-label="Menu">
-      <View style={tw`w-2 h-0.5 bg-black rounded-full mb-1`}></View>
-      <View style={tw`w-4 h-0.5 bg-black rounded-full mb-1`}></View>
-      <View style={tw`w-3 h-0.5 bg-black rounded-full self-end`}></View>
-    </View>
-  );
-};
+

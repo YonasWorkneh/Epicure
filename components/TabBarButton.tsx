@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, PressableStateCallbackType } from "react-native";
 import { PlatformPressable } from "@react-navigation/elements";
 import React, { useEffect } from "react";
 import { HeartIcon, HomeIcon, UserIcon } from "react-native-heroicons/solid";
@@ -9,6 +9,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 type TabBarButtonProps = {
   onPress: () => void;
@@ -47,9 +48,12 @@ const TabBarButton = ({
 
   return (
     <PlatformPressable
+      pressColor="#fff"
+      pressOpacity={100}
       onPress={onPress}
       onLongPress={onLongPress}
       style={[tw`items-center justify-center`, { flex: 1 }]}
+      android_ripple={null}
     >
       {typeof label === "string" &&
         label.toString().toLowerCase() === "home" && (

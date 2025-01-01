@@ -1,10 +1,10 @@
 import { forkify, mealdb } from "@/constants/url";
 // Function to make API request to Meal DB based on category
 async function getRecipesByCategory(category: string) {
-  if (category.toLowerCase() === "italian")
-    return await getRecipesByArea(category);
+  const key = category.split(" ").join("");
+  if (key.toLowerCase() === "italian") return await getRecipesByArea(key);
   try {
-    const response = await fetch(`${mealdb}/filter.php?c=${category}`);
+    const response = await fetch(`${mealdb}/filter.php?c=${key}`);
     const { meals } = await response.json();
     return meals;
   } catch (error: any) {
