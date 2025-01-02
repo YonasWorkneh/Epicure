@@ -26,8 +26,14 @@ export default function home() {
 
   useEffect(() => {
     const getRecipes = async () => {
-      const recipes = await getRecipesByCategory(activeCategory);
-      console.log(recipes);
+      try {
+        const recipes = await getRecipesByCategory(activeCategory);
+        console.log(recipes);
+        setRecipes(recipes);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
     };
     getRecipes();
   }, [activeCategory]);
