@@ -14,10 +14,12 @@ import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import RecipeListItem from "@/components/RecipeListItem";
 import { categories } from "@/constants/Categories";
 import MenuIcon from "@/components/MenuIcon";
+import Loader from "@/components/Loader";
 
 export default function home() {
   const handleSearch = () => {};
   const [activeCategory, setActiveCategory] = useState(categories[0].strMeal);
+  const [isLoading, setIsLoading] = useState(false);
   const mealObject = (
     meals: { idMeal: string; strMeal: string; strMealThumb: string }[]
   ) =>
@@ -33,14 +35,16 @@ export default function home() {
   useEffect(() => {
     const getRecipes = async () => {
       try {
+        setIsLoading(true);
         const recipes = await getRecipesByCategory(activeCategory);
-        console.log(recipes);
         if (!Array.isArray(recipes) || !recipes.length)
           throw new Error("Invalid recipes");
         setRecipes(mealObject(recipes));
       } catch (err) {
         console.error(err);
         throw err;
+      } finally {
+        setIsLoading(false);
       }
     };
     getRecipes();
@@ -101,22 +105,26 @@ export default function home() {
         categories={mealObject(categories)}
         onSetCategory={setActiveCategory}
       />
-      <FlatList
-        data={recipes}
-        renderItem={({ item, index }) => (
-          <RecipeListItem
-            title={item.meal}
-            src={item.mealImg}
-            index={index}
-            id={item.id}
-            key={item.id}
-          />
-        )}
-        keyExtractor={(item, index) => item.id + index}
-        numColumns={2}
-        contentContainerStyle={tw`p-4`}
-        ListFooterComponent={<View style={{ height: 150 }} />}
-      />
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <FlatList
+          data={recipes}
+          renderItem={({ item, index }) => (
+            <RecipeListItem
+              title={item.meal}
+              src={item.mealImg}
+              index={index}
+              id={item.id}
+              key={item.id}
+            />
+          )}
+          keyExtractor={(item, index) => item.id + index}
+          numColumns={2}
+          contentContainerStyle={tw`p-4`}
+          ListFooterComponent={<View style={{ height: 150 }} />}
+        />
+      )}
     </SafeAreaView>
   );
 }

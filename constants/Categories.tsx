@@ -1,4 +1,5 @@
 import images from "./images";
+
 export const categories = [
   {
     idMeal: "1231",
@@ -28,6 +29,6 @@ export const categories = [
   {
     idMeal: "fahi31",
     strMeal: "Italian",
-    strMealThumb: images.vegan,
+    strMealThumb: images.italian,
   },
 ];

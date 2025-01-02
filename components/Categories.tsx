@@ -26,7 +26,7 @@ export default function categories({
             index={index}
           />
         )}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={tw`items-center justify-between p-4 py-5 gap-5 my-3`}
         horizontal
       />

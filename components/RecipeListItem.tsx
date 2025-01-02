@@ -18,9 +18,9 @@ export default function RecipeListItem({ title, src, index }: RecipeItemProps) {
     >
       <View>
         <Image
-          source={src}
+          source={{ uri: src }}
           style={[
-            tw`w-full rounded-[40px]`,
+            tw`w-full rounded-[40px] bg-amber-500/50`,
             {
               height: index % 3 === 0 ? hp(25) : hp(30),
               marginTop: index % 3 === 0 ? "-1rem" : "initial",
@@ -34,7 +34,7 @@ export default function RecipeListItem({ title, src, index }: RecipeItemProps) {
           { fontFamily: "Diphylleia-Regular" },
         ]}
       >
-        {title.length > 20 ? title.slice(0, 20) + "..." : title}
+        {title.length > 15 ? title.slice(0, 15) + "..." : title}
       </Text>
     </Animated.View>
   );

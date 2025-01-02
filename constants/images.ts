@@ -7,6 +7,7 @@ import steak from "../assets/images/steak.jpg";
 import vegan from "../assets/images/vegan.jpg";
 import sweet from "../assets/images/sweet.png";
 import all from "../assets/images/all.webp";
+import italian from "../assets/images/itallian.jpg";
 
 export default {
   avatar,
@@ -18,4 +19,5 @@ export default {
   sweet,
   steak,
   vegan,
+  italian
 };
