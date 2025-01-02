@@ -14,22 +14,30 @@ import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import RecipeListItem from "@/components/RecipeListItem";
 import { categories } from "@/constants/Categories";
 import MenuIcon from "@/components/MenuIcon";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
 
 export default function home() {
   const handleSearch = () => {};
-  const [activeCategory, setActiveCategory] = useState(categories[0].name);
-  const [recipes, setRecipes] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(categories[0].strMeal);
+  const mealObject = (
+    meals: { idMeal: string; strMeal: string; strMealThumb: string }[]
+  ) =>
+    meals.map((meal) => {
+      return {
+        id: meal.idMeal,
+        meal: meal.strMeal,
+        mealImg: meal.strMealThumb,
+      };
+    });
+  const [recipes, setRecipes] = useState(mealObject(categories));
 
   useEffect(() => {
     const getRecipes = async () => {
       try {
         const recipes = await getRecipesByCategory(activeCategory);
         console.log(recipes);
-        setRecipes(recipes);
+        if (!Array.isArray(recipes) || !recipes.length)
+          throw new Error("Invalid recipes");
+        setRecipes(mealObject(recipes));
       } catch (err) {
         console.error(err);
         throw err;
@@ -89,13 +97,22 @@ export default function home() {
       </View>
 
       {/* categories */}
-      <Categories categories={categories} onSetCategory={setActiveCategory} />
+      <Categories
+        categories={mealObject(categories)}
+        onSetCategory={setActiveCategory}
+      />
       <FlatList
-        data={categories}
+        data={recipes}
         renderItem={({ item, index }) => (
-          <RecipeListItem title={item.name} src={item.src} index={index} />
+          <RecipeListItem
+            title={item.meal}
+            src={item.mealImg}
+            index={index}
+            id={item.id}
+            key={item.id}
+          />
         )}
-        keyExtractor={(item) => item.src}
+        keyExtractor={(item, index) => item.id + index}
         numColumns={2}
         contentContainerStyle={tw`p-4`}
         ListFooterComponent={<View style={{ height: 150 }} />}

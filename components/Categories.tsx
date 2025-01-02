@@ -5,7 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import CategoryItem from "./CategoryItem";
 
 type categoriesProp = {
-  categories: { name: string; src: ImageBitmap }[];
+  categories: { id: string; meal: string; mealImg: string }[];
   onSetCategory: (category: string) => void;
 };
 
@@ -19,13 +19,14 @@ export default function categories({
         data={categories}
         renderItem={({ item, index }) => (
           <CategoryItem
-            name={item.name}
-            src={item.src}
+            name={item.meal}
+            src={item.mealImg}
+            id={item.id}
             onSetCategory={onSetCategory}
             index={index}
           />
         )}
-        keyExtractor={(item) => item.name}
+        keyExtractor={(item) => item}
         contentContainerStyle={tw`items-center justify-between p-4 py-5 gap-5 my-3`}
         horizontal
       />

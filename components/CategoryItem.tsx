@@ -3,10 +3,11 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import tw from "twrnc";
 
 type CategoryItemProps = {
+  name: string;
+  src: string;
+  id: string;
   index: number;
   onSetCategory: (category: string) => void;
-  name: string;
-  src: ImageBitmap;
 };
 
 export default function CategoryItem({

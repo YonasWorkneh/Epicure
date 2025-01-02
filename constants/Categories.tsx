@@ -1,27 +1,33 @@
 import images from "./images";
 export const categories = [
   {
-    name: "All",
-    src: images.all,
+    idMeal: "1231",
+    strMeal: "All",
+    strMealThumb: images.all,
   },
   {
-    name: "Dessert",
-    src: images.sweet,
+    idMeal: "13fjsl",
+    strMeal: "Dessert",
+    strMealThumb: images.sweet,
   },
   {
-    name: "Beef",
-    src: images.steak,
+    idMeal: "hias21",
+    strMeal: "Beef",
+    strMealThumb: images.steak,
   },
   {
-    name: "Sea Food",
-    src: images.sea,
+    idMeal: "fjkai",
+    strMeal: "Sea Food",
+    strMealThumb: images.sea,
   },
   {
-    name: "Vegan",
-    src: images.vegan,
+    idMeal: "rei34",
+    strMeal: "Vegan",
+    strMealThumb: images.vegan,
   },
   {
-    name: "Italian",
-    src: images.vegan,
+    idMeal: "fahi31",
+    strMeal: "Italian",
+    strMealThumb: images.vegan,
   },
 ];

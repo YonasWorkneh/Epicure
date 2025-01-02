@@ -7,6 +7,7 @@ type RecipeItemProps = {
   title: string;
   src: any;
   index: number;
+  id: string;
 };
 
 export default function RecipeListItem({ title, src, index }: RecipeItemProps) {
