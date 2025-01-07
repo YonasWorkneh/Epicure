@@ -14,8 +14,6 @@ const Scrollable: React.FC<ScrollableProps> = ({ children, ...rest }) => {
   const showBottomGradient = scrollY + viewportHeight < contentHeight;
 
   const handleScroll = (event: any) => {
-    // alert("event fired");
-    // alert(event.nativeEvent.contentOffset.y);
     setScrollY(event.nativeEvent.contentOffset.y);
   };
   return (

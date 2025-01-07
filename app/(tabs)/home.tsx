@@ -9,30 +9,28 @@ import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
 
 import CustomButton from "@/components/CustomButton";
 import Categories from "@/components/Categories";
-import { getRecipesByCategory } from "@/lib/api/recipe";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { getCategories, getRecipesByCategory } from "@/lib/api/recipe";
 import RecipeListItem from "@/components/RecipeListItem";
-import { categories } from "@/constants/Categories";
 import MenuIcon from "@/components/MenuIcon";
 import Loader from "@/components/Loader";
+import { mealObject } from "@/lib/utils/utils";
 
 export default function home() {
   const handleSearch = () => {};
-  const [activeCategory, setActiveCategory] = useState(categories[0].strMeal);
   const [isLoading, setIsLoading] = useState(false);
-  const mealObject = (
-    meals: { idMeal: string; strMeal: string; strMealThumb: string }[]
-  ) =>
-    meals.map((meal) => {
-      return {
-        id: meal.idMeal,
-        meal: meal.strMeal,
-        mealImg: meal.strMealThumb,
-      };
-    });
+  const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState(mealObject(categories));
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
+    const getCategoriesList = async () => {
+      try {
+        const categories = await getCategories();
+        setCategories(categories);
+      } catch (err: any) {
+        console.error(err.message);
+      }
+    };
     const getRecipes = async () => {
       try {
         setIsLoading(true);
@@ -41,13 +39,12 @@ export default function home() {
           throw new Error("Invalid recipes");
         setRecipes(mealObject(recipes));
       } catch (err) {
-        console.error(err);
-        throw err;
       } finally {
         setIsLoading(false);
       }
     };
     getRecipes();
+    getCategoriesList();
   }, [activeCategory]);
 
   return (
@@ -102,7 +99,7 @@ export default function home() {
 
       {/* categories */}
       <Categories
-        categories={mealObject(categories)}
+        categories={mealObject(categories, true)}
         onSetCategory={setActiveCategory}
       />
       {isLoading ? (

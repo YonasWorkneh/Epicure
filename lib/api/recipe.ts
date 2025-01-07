@@ -1,16 +1,16 @@
 import { forkify, mealdb } from "@/constants/url";
+import { fetch as fetchNetworkInfo } from "@react-native-community/netinfo";
 // Function to make API request to Meal DB based on category
 async function getRecipesByCategory(category: string) {
   const key = category.split(" ").join("");
   if (key.toLowerCase() === "italian") return await getRecipesByArea(key);
+  if (key.toLowerCase() === "all") return await getRandomMeals();
   try {
     const response = await fetch(`${mealdb}/filter.php?c=${key}`);
     const { meals } = await response.json();
     return meals;
   } catch (error: any) {
-    console.error(
-      `Error fetching recipes from Meal DB for category ${category}: ${error.message}`
-    );
+    await checkNetwork();
     throw error;
   }
 }
@@ -21,11 +21,29 @@ async function getRecipesByArea(area: string) {
     const response = await fetch(`${mealdb}/filter.php?a=${area}`);
     const { meals } = await response.json();
     return meals;
-  } catch (error: any) {
-    console.error(
-      `Error fetching recipes from Meal DB for area ${area}: ${error.message}`
+  } catch (err: any) {
+    const netStatus = await checkNetwork();
+    if (netStatus) throw err;
+    else throw new Error(`Network error`);
+  }
+}
+
+async function getRandomMeals() {
+  try {
+    const catRes = await fetch(`${mealdb}/categories.php`);
+    const { categories } = await catRes.json();
+    const response = await Promise.all(
+      categories.map((category: { strCategory: string }) =>
+        fetch(`${mealdb}/filter.php?c=${category?.strCategory}`)
+      )
     );
-    throw error;
+    const data = await Promise.all(response.map((res) => res.json()));
+    const recipes = data.map((meals) => meals.meals).map((recipe) => recipe[0]);
+    return recipes;
+  } catch (err: any) {
+    const netStatus = await checkNetwork();
+    if (netStatus) throw err;
+    else throw new Error(`Network error`);
   }
 }
 
@@ -35,9 +53,10 @@ async function getRecipesSearch(key: string) {
     const data = await response.json();
     console.log(data);
     return data;
-  } catch (error: any) {
-    console.error(`Error fetching recipes from Forkify: ${error.message}`);
-    throw error;
+  } catch (err: any) {
+    const netStatus = await checkNetwork();
+    if (netStatus) throw err;
+    else throw new Error(`Network error`);
   }
 }
 
@@ -47,12 +66,33 @@ async function getRecipeDetail(id: string) {
     const data = await response.json();
     console.log(data);
     return data;
-  } catch (error: any) {
-    console.error(
-      `Error fetching recipe details from Forkify: ${error.message}`
-    );
-    throw error;
+  } catch (err: any) {
+    const netStatus = await checkNetwork();
+    if (netStatus) throw err;
+    else throw new Error(`Network error`);
   }
 }
 
-export { getRecipesByCategory, getRecipeDetail };
+async function getCategories() {
+  try {
+    const response = await fetch(`${mealdb}/categories.php`);
+    const { categories } = await response.json();
+    return categories;
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+async function checkNetwork() {
+  try {
+    const res = await fetchNetworkInfo();
+    const status = res.isConnected;
+    console.log(status);
+    return status;
+  } catch (err: any) {
+    console.error(err.message);
+    throw err;
+  }
+}
+
+export { getRecipesByCategory, getRecipeDetail, getCategories };

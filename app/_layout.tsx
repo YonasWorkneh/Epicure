@@ -7,11 +7,8 @@ import {
   NativeScrollEvent,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Slot, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import changeNavigationBarColor, {
-  hideNavigationBar,
-} from "react-native-navigation-bar-color";
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
@@ -21,6 +18,7 @@ SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [hideSplash, setHideSplash] = useState(false);
 
   const handleScroll = (event: any) => {
     alert("event fired");
@@ -43,12 +41,13 @@ const RootLayout = () => {
   });
 
   useEffect(() => {
+    setTimeout(() => setHideSplash(true), 1000);
     if (error) throw error;
 
-    if (fontsLoaded) {
+    if (fontsLoaded && hideSplash) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded, error, hideSplash]);
 
   if (!fontsLoaded) {
     return null;

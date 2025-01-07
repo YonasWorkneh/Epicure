@@ -30,10 +30,10 @@ export default function index() {
     outerRingPadding.value = 0;
     setTimeout(() => {
       innerRingPadding.value = withSpring(innerRingPadding.value + hp(5));
-    }, 100);
+    }, 1100);
     setTimeout(() => {
       outerRingPadding.value = withSpring(outerRingPadding.value + hp(5));
-    }, 300);
+    }, 1300);
   }, []);
 
   return (

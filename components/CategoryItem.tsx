@@ -16,7 +16,6 @@ export default function CategoryItem({
   src,
   onSetCategory,
 }: CategoryItemProps) {
-  console.log(src);
   return (
     <TouchableOpacity
       key={index}
@@ -29,7 +28,7 @@ export default function CategoryItem({
       >
         <View style={tw`relative h-10 w-10 bg-amber-500/70 rounded-full`}>
           <Image
-            source={src}
+            source={{ uri: src }}
             style={tw`h-10 w-10 rounded-full bg-amber-500/10 absolute top-0 left-0 opacity-50`}
           />
         </View>
