@@ -1,4 +1,6 @@
-import { Image, Text, View } from "react-native";
+import { useTabContext } from "@/contexts/TabContext";
+import { useRouter } from "expo-router";
+import { Image, Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import tw from "twrnc";
@@ -10,32 +12,48 @@ type RecipeItemProps = {
   id: string;
 };
 
-export default function RecipeListItem({ title, src, index }: RecipeItemProps) {
+export default function RecipeListItem({
+  title,
+  src,
+  index,
+  id,
+}: RecipeItemProps) {
+  const router = useRouter();
+  const { setShowTabBar } = useTabContext();
   return (
-    <Animated.View
-      entering={FadeInDown.delay(index * 100)}
-      style={tw`flex-1 m-2`}
+    <Pressable
+      onPress={() => {
+        router.navigate(`/(tabs)/recipe?id=${id}`);
+        setShowTabBar(false);
+      }}
+      style={tw`flex-1`}
     >
-      <View>
-        <Image
-          source={{ uri: src }}
-          style={[
-            tw`w-full rounded-[40px] bg-amber-500/50`,
-            {
-              height: index % 3 === 0 ? hp(25) : hp(30),
-              marginTop: index % 3 === 0 ? "-1rem" : "initial",
-            },
-          ]}
-        />
-      </View>
-      <Text
-        style={[
-          tw`px-3 py-2 text-[1rem]`,
-          { fontFamily: "Diphylleia-Regular" },
-        ]}
+      <Animated.View
+        entering={FadeInDown.delay(index * 100)}
+        style={tw`flex-1 m-2`}
       >
-        {title.length > 15 ? title.slice(0, 15) + "..." : title}
-      </Text>
-    </Animated.View>
+        <View>
+          <Animated.Image
+            source={{ uri: src }}
+            style={[
+              tw`w-full rounded-[40px] bg-amber-500/50`,
+              {
+                height: index % 3 === 0 ? hp(25) : hp(30),
+                marginTop: index % 3 === 0 ? "-1rem" : "initial",
+              },
+            ]}
+            sharedTransitionTag={id}
+          />
+        </View>
+        <Text
+          style={[
+            tw`px-3 py-2 text-[1rem]`,
+            { fontFamily: "Diphylleia-Regular" },
+          ]}
+        >
+          {title.length > 15 ? title.slice(0, 15) + "..." : title}
+        </Text>
+      </Animated.View>
+    </Pressable>
   );
 }

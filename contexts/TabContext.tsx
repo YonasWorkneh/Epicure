@@ -6,6 +6,8 @@ import { AppState } from "react-native";
 interface TabContextValue {
   activeTab: string;
   menuOpened: boolean;
+  showTabBar: boolean;
+  setShowTabBar: (opened: boolean) => void;
   setMenuOpened: (opened: boolean) => void;
   setActiveTab: (tab: string) => void;
 }
@@ -19,10 +21,18 @@ export const TabContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<string>("");
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
+  const [showTabBar, setShowTabBar] = useState<boolean>(true);
 
   return (
     <TabContext.Provider
-      value={{ activeTab, menuOpened, setMenuOpened, setActiveTab }}
+      value={{
+        activeTab,
+        menuOpened,
+        showTabBar,
+        setShowTabBar,
+        setMenuOpened,
+        setActiveTab,
+      }}
     >
       {children}
     </TabContext.Provider>

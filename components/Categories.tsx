@@ -13,7 +13,6 @@ export default function categories({
   categories,
   onSetCategory,
 }: categoriesProp) {
-  console.log(categories);
   return (
     <>
       <FlatList
@@ -40,7 +39,7 @@ export default function categories({
           />
         )}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={tw`items-center justify-between p-4 py-5 gap-5 my-3`}
+        contentContainerStyle={tw`justify-between p-4 py-0 gap-5 mt-3 h-28`}
         horizontal
         showsHorizontalScrollIndicator={false}
       />

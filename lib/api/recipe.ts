@@ -1,5 +1,6 @@
 import { forkify, mealdb } from "@/constants/url";
-import { fetch as fetchNetworkInfo } from "@react-native-community/netinfo";
+import { checkNetwork } from "../utils/utils";
+
 // Function to make API request to Meal DB based on category
 async function getRecipesByCategory(category: string) {
   const key = category.split(" ").join("");
@@ -49,10 +50,25 @@ async function getRandomMeals() {
 
 async function getRecipesSearch(key: string) {
   try {
-    const response = await fetch(`${forkify}/recipes?`);
-    const data = await response.json();
-    console.log(data);
-    return data;
+    const response = await Promise.allSettled([
+      fetch(`${forkify}/recipes?search=${key}`),
+      fetch(`${mealdb}/search.php?s=${key}`),
+    ]);
+    const [fky, mdb] = response;
+    const fkyResult =
+      fky.status === "fulfilled"
+        ? await fky.value.json()
+        : { error: fky.reason };
+    const mdbResult =
+      mdb.status === "fulfilled"
+        ? await mdb.value.json()
+        : { error: mdb.reason };
+    if (fkyResult.error) throw Error("Error fetching recipes");
+    if (mdbResult.error) throw Error("Error fetching recipes");
+    const { recipes: fkyRecipes } = fkyResult.data;
+    const { meals: mdbRecipes } = mdbResult;
+
+    return { fkyRecipes, mdbRecipes };
   } catch (err: any) {
     const netStatus = await checkNetwork();
     if (netStatus) throw err;
@@ -77,22 +93,16 @@ async function getCategories() {
   try {
     const response = await fetch(`${mealdb}/categories.php`);
     const { categories } = await response.json();
+    // console.log(categories);
     return categories;
-  } catch (err) {
-    console.error(err.message);
-  }
-}
-
-async function checkNetwork() {
-  try {
-    const res = await fetchNetworkInfo();
-    const status = res.isConnected;
-    console.log(status);
-    return status;
   } catch (err: any) {
     console.error(err.message);
-    throw err;
   }
 }
 
-export { getRecipesByCategory, getRecipeDetail, getCategories };
+export {
+  getRecipesByCategory,
+  getRecipeDetail,
+  getCategories,
+  getRecipesSearch,
+};

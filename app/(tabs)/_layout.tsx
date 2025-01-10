@@ -3,10 +3,6 @@ import { Tabs } from "expo-router";
 import TabBar from "@/components/TabBar";
 import Sidebar from "@/components/Sidebar";
 import { useTabContext } from "@/contexts/TabContext";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-} from "react-native-gesture-handler";
 
 export default function TabLayout() {
   const { menuOpened } = useTabContext();

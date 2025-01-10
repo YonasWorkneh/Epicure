@@ -3,23 +3,26 @@ import { View } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import tw from "twrnc";
 import TabBarButton from "./TabBarButton";
+import { useTabContext } from "@/contexts/TabContext";
 
 export default function TabBar({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const { showTabBar } = useTabContext();
   return (
     <View
       style={[
-        tw`flex-row items-center justify-between bg-white rounded-full absolute bottom-3`,
+        tw`flex-row bg-white rounded-full absolute bottom-3 left-5 h-16`,
         {
-          shadowColor: "#0000009b",
-          shadowOffset: { width: 0, height: 10 },
+          shadowColor: "#000000e3",
+          shadowOffset: { width: 0, height: 15 },
           shadowRadius: 10,
           shadowOpacity: 0.3,
           padding: 12,
           marginHorizontal: 50,
+          display: showTabBar ? "flex" : "none",
         },
       ]}
     >

@@ -9,19 +9,35 @@ import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
 
 import CustomButton from "@/components/CustomButton";
 import Categories from "@/components/Categories";
-import { getCategories, getRecipesByCategory } from "@/lib/api/recipe";
+import {
+  getCategories,
+  getRecipesByCategory,
+  getRecipesSearch,
+} from "@/lib/api/recipe";
 import RecipeListItem from "@/components/RecipeListItem";
 import MenuIcon from "@/components/MenuIcon";
 import Loader from "@/components/Loader";
-import { mealObject } from "@/lib/utils/utils";
+import { checkNetwork, mealForkify, mealObject } from "@/lib/utils/utils";
 
 export default function home() {
-  const handleSearch = () => {};
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState(mealObject(categories));
   const [activeCategory, setActiveCategory] = useState("all");
 
+  const handleSearch = async (key: string, reset?: boolean) => {
+    if (reset) {
+      setActiveCategory("all");
+      return;
+    }
+    try {
+      const result = await getRecipesSearch(key);
+      const { fkyRecipes, mdbRecipes } = result;
+      setRecipes([...mealForkify(fkyRecipes), ...mealObject(mdbRecipes)]);
+    } catch (err: any) {
+      checkNetwork();
+    }
+  };
   useEffect(() => {
     const getCategoriesList = async () => {
       try {
