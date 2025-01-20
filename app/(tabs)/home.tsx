@@ -18,12 +18,30 @@ import RecipeListItem from "@/components/RecipeListItem";
 import MenuIcon from "@/components/MenuIcon";
 import Loader from "@/components/Loader";
 import { checkNetwork, mealForkify, mealObject } from "@/lib/utils/utils";
+import { fetchUser } from "@/lib/api/user";
+import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+
+interface User {
+  id: number;
+  name?: string;
+  email: string;
+  password: string;
+  image?: string;
+  favorites?: string;
+}
 
 export default function home() {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState(mealObject(categories));
   const [activeCategory, setActiveCategory] = useState("all");
+  const [activeUser, setActiveUser] = useState<User>({
+    id: 0,
+    email: "",
+    password: "",
+  });
+  const searchParams = useLocalSearchParams();
+  const { clear } = searchParams;
 
   const handleSearch = async (key: string, reset?: boolean) => {
     if (reset) {
@@ -38,6 +56,7 @@ export default function home() {
       checkNetwork();
     }
   };
+  // const fetch active recipe category
   useEffect(() => {
     const getCategoriesList = async () => {
       try {
@@ -63,8 +82,31 @@ export default function home() {
     getCategoriesList();
   }, [activeCategory]);
 
+  // fetch user related data
+  useEffect(function () {
+    const getUser = async () => {
+      try {
+        const user = await fetchUser();
+        setActiveUser(user);
+      } catch (err: any) {
+        console.error(err.message);
+      }
+    };
+    getUser();
+  }, []);
+
+  useEffect(
+    function () {
+      setActiveUser({ id: 0, name: "", email: "", password: "" });
+    },
+    [clear]
+  );
+
   return (
-    <SafeAreaView style={tw`h-full w-full`}>
+    <SafeAreaView
+      style={tw`h-full w-full`}
+      key={clear ? (Array.isArray(clear) ? clear[0] : clear) : ""}
+    >
       {/* header */}
       <View style={tw`px-4 flex flex-row  justify-between items-center mt-3`}>
         <CustomButton icon={<MenuIcon />} />
@@ -77,7 +119,14 @@ export default function home() {
           Epicure
         </Text>
         <Link href={"./profile"}>
-          <Image source={images.avatar} style={tw`w-10 h-10`} />
+          <Image
+            source={
+              activeUser.image
+                ? { uri: activeUser.image } // If an image is selected, use its URI
+                : require("../../assets/images/avatar.png") // Fallback to default
+            }
+            style={tw`w-15 h-15 rounded-full`}
+          />
         </Link>
       </View>
 
@@ -91,7 +140,7 @@ export default function home() {
             { fontFamily: "Poppins-Bold" },
           ]}
         >
-          Hello {"user"},
+          Hello {activeUser.name ? activeUser.name : "user"},
         </Text>
         <Text
           style={[
@@ -130,6 +179,7 @@ export default function home() {
               index={index}
               id={item.id}
               key={item.id}
+              api={item.api}
             />
           )}
           keyExtractor={(item, index) => item.id + index}

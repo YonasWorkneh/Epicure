@@ -1,28 +1,46 @@
-import { View, Text, StatusBar, TextInput } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import images from "@/constants/images";
 import { Image } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
-import CustomButton from "@/components/CustomButton";
 import { useRouter } from "expo-router";
 import { ScrollView } from "react-native";
-import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
-import Error from "@/components/Error";
-import AuthForm from "@/components/AuthForm";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
-import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
+import Animated, { FadeInRight } from "react-native-reanimated";
+
+import images from "@/constants/images";
+import { signUp } from "@/lib/api/user";
+import CustomButton from "@/components/CustomButton";
+import AuthForm from "@/components/AuthForm";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+interface SignUpErrors {
+  email?: string;
+  password?: string;
+}
 
 export default function signup() {
-  function handleSubmit() {}
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [visibility, setVisibility] = useState(false);
+  const [signingUp, setSigningUp] = useState(false);
   const router = useRouter();
-
-  const handleForgotPassword = () => {};
-  const handleSignUp = () => {};
+  const [signUpErrors, setSignUpErrors] = useState<SignUpErrors>({});
+  const handleSignUp = async (
+    email: string,
+    password: string,
+    clear: () => void
+  ) => {
+    try {
+      setSigningUp(true);
+      const res = await signUp(email, password);
+      await AsyncStorage.setItem("userId", JSON.stringify(res.id));
+      router.navigate("/(tabs)/home");
+      clear();
+      return res;
+    } catch (err: any) {
+      const errMessage = JSON.parse(err.message);
+      setSignUpErrors(errMessage);
+    } finally {
+      setTimeout(() => setSigningUp(false), 1000);
+    }
+  };
 
   return (
     <SafeAreaView style={tw`h-full bg-white`}>
@@ -43,7 +61,8 @@ export default function signup() {
           title="Create Account"
           type="signup"
           onSubmit={handleSignUp}
-          onForgotPassword={handleForgotPassword}
+          errors={signUpErrors}
+          loadingState={signingUp}
         />
       </ScrollView>
     </SafeAreaView>

@@ -8,12 +8,14 @@ type SearchProps = {
   onSearch: (key: string, reset?: boolean) => void;
   backgroundStyles?: string;
   inputStyles?: string;
+  placeholder?: string;
 };
 
 const SearchBar: React.FC<SearchProps> = ({
   onSearch,
   backgroundStyles,
   inputStyles,
+  placeholder = "Search recipes",
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [key, setKey] = useState("");
@@ -30,7 +32,7 @@ const SearchBar: React.FC<SearchProps> = ({
     >
       <TextInput
         style={tw`flex-1 text-grey-700 ${inputStyles ? inputStyles : ""}`}
-        placeholder="Search recipes"
+        placeholder={placeholder}
         placeholderTextColor="rgba(0,0,0,0.5)"
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

@@ -37,6 +37,10 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "supabaseUrl": "https://erluvheqdwifiutaxruv.supabase.co",
+      "supabaseKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVybHV2aGVxZHdpZml1dGF4cnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5MjE3NzQsImV4cCI6MjA1MDQ5Nzc3NH0.DVU1w37tLBYIg9qNroLkU1SaxSygmXCwKaHCxCMM4lI"
     }
   }
 }

@@ -15,103 +15,136 @@ import tw from "twrnc";
 import CustomButton from "@/components/CustomButton";
 import { openBrowserAsync } from "expo-web-browser";
 import { useTabContext } from "@/contexts/TabContext";
-import Animated, {
-  FadeInDown,
-  FadeInLeft,
-} from "react-native-reanimated";
+import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomModal from "@/components/Modal";
 
 export default function recipe() {
+  const searchParams = useLocalSearchParams();
+  const { id, api } = searchParams;
+
   type Recipe = {
     id: string;
     title: string;
-    ingredients: { description: string; unit: string; quantity: number }[];
-    src: string;
-    preparedBy: string;
+    ingredients: string[];
+    publisher: string;
     servings: number;
     cookingTime: number;
     sourceUrl: string;
+    imageUrl: string;
   };
-  const ing = [
-    {
-      quantity: 4.5,
-      unit: "cups",
-      description: "unbleached high-gluten bread or all-purpose flour chilled",
-    },
-    {
-      quantity: 1.75,
-      unit: "tsps",
-      description: "salt",
-    },
-    {
-      quantity: 1,
-      unit: "tsp",
-      description: "instant yeast",
-    },
-    {
-      quantity: 0.25,
-      unit: "cup",
-      description: "olive oil",
-    },
-    {
-      quantity: 1.75,
-      unit: "cups",
-      description: "water ice cold",
-    },
-    {
-      quantity: null,
-      unit: "",
-      description: "Semolina flour or cornmeal for dusting",
-    },
-  ];
-  const searchParams = useLocalSearchParams();
+
   const router = useRouter();
-  const { id } = searchParams;
   const [recipe, setRecipe] = useState<Recipe>();
   const { setShowTabBar } = useTabContext();
   const [isFavourite, setIsFavourite] = useState(false);
-  
-  function handleBookmark() {
-    setIsFavourite((state) => !state);
-    alert(isFavourite ? "Removed from favourite" : "Added to favourite");
+  const randomCal = Math.floor(Math.random() * (800 - 150 + 1)) + 150;
+  const [showModal, setShowModal] = useState(false);
+
+  async function handleBookmark() {
+    const id = await AsyncStorage.getItem("userId");
+    if (!id) setShowModal(true);
   }
   function onOpenDirectionLink() {
     openBrowserAsync(recipe?.sourceUrl ? recipe?.sourceUrl : "");
   }
-  useEffect(
-    function () {
-      async function getRecipe() {
-        try {
-          const recipeDetail = await getRecipeDetail(
-            Array.isArray(id) ? id[0] : id
-          );
-          setRecipe(recipeDetail);
-        } catch (err: any) {
-          console.error(err.message);
-        }
-      }
-      //   getRecipe();
-    },
-    [searchParams]
-  );
+  useEffect(() => {
+    async function getRecipe() {
+      try {
+        const recipeDetail = await getRecipeDetail(
+          Array.isArray(id) ? id[0] : id,
+          Array.isArray(api) ? api[0] : api
+        );
+        let recipeObject: Recipe = {
+          id: "",
+          title: "",
+          ingredients: [],
+          publisher: "meal Db",
+          servings: 0,
+          cookingTime: 0,
+          imageUrl: "",
+          sourceUrl: "",
+        };
 
-  //   if (!recipe) return null;
+        if (api === "forkify") {
+          // Convert snake_case to camelCase
+          const camelCasedKeys = Object.keys(recipeDetail).map((key) =>
+            key
+              .split("_")
+              .map((subKeys, index) =>
+                index === 0
+                  ? subKeys[0].toLowerCase() + subKeys.slice(1)
+                  : subKeys[0].toUpperCase() + subKeys.slice(1)
+              )
+              .join("")
+          );
+
+          recipeObject = Object.keys(recipeDetail).reduce(
+            (recipeObj: any, key: string, index: number) => {
+              recipeObj[camelCasedKeys[index]] =
+                key === "ingredients"
+                  ? recipeDetail[key].map(
+                      (ing: any) =>
+                        `${ing.quantity || ""} ${ing.unit || ""} ${
+                          ing.description || ""
+                        }`
+                    )
+                  : recipeDetail[key];
+              return recipeObj;
+            },
+            {}
+          );
+        } else {
+          Object.keys(recipeDetail).forEach((key) => {
+            if (key === "idMeal") recipeObject.id = recipeDetail[key];
+            if (key.includes("Ingredient") && recipeDetail[key]) {
+              const index = +key.slice(key.lastIndexOf("t") + 1);
+              console.log(index);
+              recipeObject.ingredients[index - 1] =
+                recipeDetail[`strMeasure${index}`] + " " + recipeDetail[key];
+            }
+            if (key === "strMeal") recipeObject.title = recipeDetail[key];
+            if (key.includes("Youtube")) {
+              recipeObject.sourceUrl = recipeDetail[key]
+                ? recipeDetail[key]
+                : recipeDetail["strSource"];
+            }
+            if (key.includes("Thumb"))
+              recipeObject.imageUrl = recipeDetail[key];
+          });
+          recipeObject.cookingTime =
+            Math.floor(Math.random() * (120 - 45 + 1)) + 45;
+          console.log(recipeObject);
+        }
+
+        // Only update state if the recipe is different
+        setRecipe(recipeObject);
+      } catch (err: any) {
+        // console.error(err.message);
+      }
+    }
+
+    getRecipe();
+  }, [id, api]);
+
+  if (!recipe) return null;
   return (
-    <View>
+    <View key={Array.isArray(id) ? id[0] : id}>
       {/* line */}
       {/* recipe-banner */}
       <View style={tw`w-full h-100 bg-amber-500/50  relative`}>
         <Animated.Image
           style={tw`h-full w-full `}
           source={{
-            uri: recipe?.id
-              ? recipe?.id
+            uri: recipe?.imageUrl
+              ? recipe?.imageUrl
               : "https://innerschweizonline.ch/wordpress/wp-content/uploads/2022/08/Sommerliches-Beef-Tatar.jpg",
           }}
           sharedTransitionTag={Array.isArray(id) ? id[0] : id}
         />
         <CustomButton
           icon={<ArrowLeftIcon style={tw`text-black`} size={22} />}
-          backgroundStyles={`absolute top-12 left-5 bg-white w-10 h-10 rounded-full flex-row items-center justify-center`}
+          backgroundStyles={`absolute top-8 left-5 bg-white w-10 h-10 rounded-full flex-row items-center justify-center`}
           onPress={() => {
             router.back();
             setShowTabBar(true);
@@ -126,12 +159,12 @@ export default function recipe() {
               size={25}
             />
           }
-          backgroundStyles={`absolute top-12 right-5 bg-white w-10 h-10 rounded-full flex-row items-center justify-center`}
+          backgroundStyles={`absolute top-8 right-5 bg-white w-10 h-10 rounded-full flex-row items-center justify-center`}
           onPress={() => handleBookmark()}
         />
       </View>
       {/* Meal general Info */}
-      <View style={tw`bg-white rounded-2rem mt-[-2rem] p-4 px-6 mb-28rem`}>
+      <View style={tw`bg-white rounded-3rem mt-[-4rem] p-4 px-5 mb-28rem`}>
         <View style={tw`w-full items-center justify-center mb-4 bg-white/0`}>
           <View style={tw`w-15 h-1 bg-gray-500/30 rounded-full`}></View>
         </View>
@@ -155,7 +188,7 @@ export default function recipe() {
                 { fontFamily: "Diphylleia-Regular" },
               ]}
             >
-              By {recipe?.preparedBy || "BBC Food"}
+              By {recipe?.publisher || "BBC Food"}
             </Text>
           </View>
           {/* icons */}
@@ -165,7 +198,7 @@ export default function recipe() {
               style={tw`bg-amber-500/80 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
             >
               <View
-                style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
+                style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center `}
               >
                 <ClockIcon color={"#000000d6"} />
               </View>
@@ -183,7 +216,7 @@ export default function recipe() {
                 <UserGroupIcon color={"#000000d6"} />
               </View>
               <Text style={tw`text-[12px] font-bold text-center mt-3`}>
-                {recipe?.cookingTime || 4} {`\n`}SER
+                {recipe?.servings || 4} {`\n`}SER
               </Text>
             </Animated.View>
             <Animated.View
@@ -193,10 +226,10 @@ export default function recipe() {
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
               >
-                <FireIcon color={"#000000d6"} />
+                <FireIcon color={"#000"} />
               </View>
               <Text style={[tw`text-[12px] font-bold text-center mt-3`]}>
-                {recipe?.cookingTime || 129} {`\n`}CAL
+                {randomCal} {`\n`}CAL
               </Text>
             </Animated.View>
             <Animated.View
@@ -206,7 +239,7 @@ export default function recipe() {
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
               >
-                <CurrencyEuroIcon color={"#000000d6"} />
+                <CurrencyEuroIcon color={"#000000"} />
               </View>
               <Text style={tw`text-[12px] font-bold text-center mt-3`}>
                 Free
@@ -223,7 +256,7 @@ export default function recipe() {
             Ingredients
           </Text>
 
-          {ing.map((ingredient, index) => (
+          {recipe?.ingredients.map((ingredient, index) => (
             <Animated.View
               entering={FadeInDown.duration(300 + index * 100)}
               style={tw`p-2 flex-row items-center`}
@@ -231,17 +264,24 @@ export default function recipe() {
             >
               <View style={tw`rounded-full p-[3px] bg-amber-500 mr-3`}></View>
               <Text style={[tw``, { fontFamily: "Diphylleia-Regular" }]}>
-                {ingredient.quantity} {ingredient.unit} {ingredient.description}
+                {ingredient}
               </Text>
             </Animated.View>
           ))}
 
           {/* Cook detail link */}
           <View style={tw`p-8 px-4 h-40 items-center justify center mb-20`}>
-            <Text style={[tw``, { fontFamily: "Diphylleia-Regular" }]}>
+            <Text
+              style={[tw`text-center`, { fontFamily: "Diphylleia-Regular" }]}
+            >
               This recipe is carefully designed by{" "}
-              <Text style={tw`text-amber-500`}>
-                {recipe?.preparedBy || "BBC Food"}
+              <Text style={tw`text-amber-500 text-center`}>
+                {recipe?.publisher
+                  ? recipe?.publisher?.length > 10
+                    ? "\n"
+                    : ""
+                  : ""}
+                {recipe?.publisher || "BBC Food"}
               </Text>
               .
             </Text>
@@ -255,6 +295,26 @@ export default function recipe() {
           </View>
         </Animated.ScrollView>
       </View>
+      {showModal && (
+        <CustomModal
+          visible={showModal}
+          content={`You are not signed in yet. You need to sign in to \nsave your  favorite recipes.`}
+          title="Epicure"
+          onClose={() => setShowModal(false)}
+          modalStyles="bg-white p-4 px-6 rounded-lg items-center "
+          action={
+            <CustomButton
+              text="Sign in"
+              textStyles="text-white font-bold"
+              backgroundStyles="bg-amber-500 rounded-lg p-2 px-4"
+              onPress={() => {
+                router.navigate(`/(auth)/signin?rerender=${true}`);
+                setShowModal(false);
+              }}
+            />
+          }
+        />
+      )}
     </View>
   );
 }

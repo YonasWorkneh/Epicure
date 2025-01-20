@@ -28,6 +28,7 @@ const CustomButton: React.FC<ButtonProps> = ({
       activeOpacity={tapOpacity}
     >
       {icon ? icon : ""}
+
       <Text
         style={[tw`${textStyles ? textStyles : ""}`, { fontFamily: textFont }]}
       >

@@ -10,6 +10,7 @@ type RecipeItemProps = {
   src: any;
   index: number;
   id: string;
+  api: string;
 };
 
 export default function RecipeListItem({
@@ -17,13 +18,14 @@ export default function RecipeListItem({
   src,
   index,
   id,
+  api,
 }: RecipeItemProps) {
   const router = useRouter();
   const { setShowTabBar } = useTabContext();
   return (
     <Pressable
       onPress={() => {
-        router.navigate(`/(tabs)/recipe?id=${id}`);
+        router.navigate(`/(tabs)/recipe?id=${id}&api=${api}`);
         setShowTabBar(false);
       }}
       style={tw`flex-1`}

@@ -1,41 +1,79 @@
-import { View, Text, StatusBar, TextInput, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import images from "@/constants/images";
 import { Image } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
-import CustomButton from "@/components/CustomButton";
-import { useRouter } from "expo-router";
-import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
-import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
-import AuthForm from "@/components/AuthForm";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ScrollView } from "react-native";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import Animated, { FadeInRight } from "react-native-reanimated";
+
+import images from "@/constants/images";
+import { signIn } from "@/lib/api/user";
+import CustomButton from "@/components/CustomButton";
+import AuthForm from "@/components/AuthForm";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+interface SignUpErrors {
+  email?: string;
+  password?: string;
+}
 
 export default function signup() {
-  function handleSubmit() {} // Add your logic here
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [visibility, setVisibility] = useState(false);
+  const { rerender } = useLocalSearchParams();
+  const [renderKey, setRenderKey] = useState(rerender);
+  const [signingIn, setSigningIn] = useState(false);
   const router = useRouter();
-
-  const handleForgotPassword = () => {};
-  const handleSignIn = () => {};
+  const [signInErrors, setSignUpErrors] = useState<SignUpErrors>({});
+  const handleSignIn = async (
+    email: string,
+    password: string,
+    clear: () => void
+  ) => {
+    try {
+      setSigningIn(true);
+      const res = await signIn(email, password);
+      router.navigate("/(tabs)/home");
+      await AsyncStorage.setItem("userId", JSON.stringify(res.id));
+      clear();
+      return res;
+    } catch (err: any) {
+      const errMessage = JSON.parse(err.message);
+      setSignUpErrors(errMessage);
+    } finally {
+      setTimeout(() => setSigningIn(false), 1000);
+    }
+  };
+  useEffect(
+    function () {
+      setRenderKey(rerender);
+    },
+    [rerender]
+  );
 
   return (
-    <SafeAreaView style={tw`h-full bg-white`}>
+    <SafeAreaView
+      style={tw`h-full bg-white`}
+      key={Array.isArray(renderKey) ? renderKey[0] : renderKey}
+    >
       <ScrollView>
+        <CustomButton
+          text="Skip"
+          onPress={() => router.push("/(tabs)/home")}
+          backgroundStyles="px-4 py-4 bg-white w-rfull"
+          textStyles="text-amber-500 font-bold text-right"
+        />
         <Animated.View entering={FadeInRight.duration(1000)}>
           <Image
             source={images.signUpBg}
-            style={[tw`contain object-center `, { width: hp(50), height: hp(40) }]}
+            style={[tw`w-full`, { width: hp(50), height: hp(40) }]}
           />
         </Animated.View>
         <AuthForm
-          title="Sign In"
+          title="Sing In"
           type="signin"
           onSubmit={handleSignIn}
-          onForgotPassword={handleForgotPassword}
+          errors={signInErrors}
+          loadingState={signingIn}
         />
       </ScrollView>
     </SafeAreaView>

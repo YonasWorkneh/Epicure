@@ -63,6 +63,7 @@ async function getRecipesSearch(key: string) {
       mdb.status === "fulfilled"
         ? await mdb.value.json()
         : { error: mdb.reason };
+
     if (fkyResult.error) throw Error("Error fetching recipes");
     if (mdbResult.error) throw Error("Error fetching recipes");
     const { recipes: fkyRecipes } = fkyResult.data;
@@ -76,12 +77,15 @@ async function getRecipesSearch(key: string) {
   }
 }
 
-async function getRecipeDetail(id: string) {
+async function getRecipeDetail(id: string, api: string) {
   try {
-    const response = await fetch(`${forkify}/recipes/${id}`);
+    const response =
+      api === "forkify"
+        ? await fetch(`${forkify}/recipes/${id}`)
+        : await fetch(`${mealdb}/lookup.php?i=${id}`);
     const data = await response.json();
-    console.log(data);
-    return data;
+    const recipe = api === "forkify" ? data.data.recipe : data.meals[0];
+    return recipe;
   } catch (err: any) {
     const netStatus = await checkNetwork();
     if (netStatus) throw err;

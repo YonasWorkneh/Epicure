@@ -17,6 +17,9 @@ const mealObject = (
           id: isCategory ? meal.idCategory : meal.idMeal,
           meal: isCategory ? meal.strCategory : meal.strMeal,
           mealImg: isCategory ? meal.strCategoryThumb : meal.strMealThumb,
+          api: Object.keys(meal).some((key: string) => key.includes("str"))
+            ? "mealDb"
+            : "forkify",
         };
       })
     : [];
@@ -36,8 +39,7 @@ const mealForkify = (
     id: string;
     title: string;
     image_url: string;
-  }[],
-  isCategory = false
+  }[]
 ) =>
   meals?.length
     ? meals?.map((meal) => {
@@ -45,6 +47,7 @@ const mealForkify = (
           id: meal.id,
           meal: meal.title,
           mealImg: meal.image_url,
+          api: "forkify",
         };
       })
     : [];

@@ -72,7 +72,6 @@ const RootLayout = () => {
           />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ headerShown: false }} />
         </ScrollView>
       </Stack>
     </TabContextProvider>

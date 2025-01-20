@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, TextInput } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, ActivityIndicator } from "react-native";
 import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import tw from "twrnc";
 import CustomButton from "./CustomButton";
@@ -7,36 +7,70 @@ import Error from "./Error";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
-type AuthProps = {
+interface AuthErrors {
+  email?: string;
+  password?: string;
+  internal?: string;
+}
+
+interface AuthProps {
   title: string;
   type: string;
-  onSubmit: () => void;
+  loadingState?: boolean;
+  onSubmit: (email: string, password: string, clear: () => void) => void;
+  errors?: AuthErrors;
   onForgotPassword?: () => void;
-};
+}
 
 export default function AuthForm({
   title,
   type,
   onForgotPassword,
   onSubmit,
+  errors,
+  loadingState,
 }: AuthProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visibility, setVisibility] = useState(false);
-  const [error, setError] = useState({ email: "", password: "" });
+  const [error, setError] = useState<AuthErrors>({
+    email: errors?.email,
+    password: errors?.password,
+    internal: errors?.internal,
+  });
   const [passFocus, setPassFocus] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
   const router = useRouter();
+  const clear = () => {
+    setEmail("");
+    setPassword("");
+    setEmailFocus(false);
+    setPassFocus(false);
+    setError({});
+  };
 
   const handleSubmit = () => {
-    if (email && password) {
-      onSubmit();
+    if (email && password && password.length >= 5) {
+      onSubmit(email, password, clear);
     } else {
       if (!email) setError((prev) => ({ ...prev, email: "Email is required" }));
       if (!password)
         setError((prev) => ({ ...prev, password: "Password is required" }));
+      if (password.length < 5)
+        setError((prev) => ({
+          ...prev,
+          password: "Please choose a longer password.",
+        }));
     }
   };
+
+  useEffect(
+    function () {
+      console.log(errors);
+      setError(errors ? errors : {});
+    },
+    [errors]
+  );
 
   return (
     <Animated.View
@@ -56,16 +90,16 @@ export default function AuthForm({
       </Text>
       <View style={tw`mb-6`}>
         <Text
-          style={tw`text-sm text-gray-500 mb-1 text-[12px] opacity-30 font-bold transition duration-1500 ${
+          style={tw`${"text-sm text-gray-500 mb-1 text-[12px] opacity-30 font-bold transition duration-1500 font-pextrabold"} ${
             emailFocus || email ? "text-amber-500 opacity-100" : ""
-          }`}
+          } ${error?.email ? "text-red-500" : ""}`}
         >
           EMAIL ADDRESS
         </Text>
         <TextInput
           style={tw`border-b border-gray-300 pb-2 transition duration-1500 ${
             emailFocus || email ? "border-amber-500" : ""
-          }`}
+          } ${error?.email ? "border-red-500" : ""} `}
           placeholderTextColor="#A1A1A1"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -84,7 +118,7 @@ export default function AuthForm({
         <Text
           style={tw`text-sm text-gray-500 mb-1 text-[12px] opacity-30 font-bold transition duration-500 ${
             passFocus || password ? "text-amber-500 opacity-100" : ""
-          }`}
+          } ${error?.password ? "text-red-500" : ""}`}
         >
           PASSWORD
         </Text>
@@ -92,7 +126,7 @@ export default function AuthForm({
           <TextInput
             style={tw`border-b border-gray-300 pb-2 transition duration-500  ${
               passFocus || password ? "border-amber-500" : ""
-            }`}
+            } ${error?.password ? "border-red-500" : ""}`}
             placeholderTextColor="#A1A1A1"
             secureTextEntry={!visibility}
             value={password}
@@ -129,10 +163,21 @@ export default function AuthForm({
       )}
 
       <CustomButton
-        text={type === "signup" ? "Sign Up" : "Sign In"}
+        {...(loadingState
+          ? {
+              icon: (
+                <ActivityIndicator
+                  size={3}
+                  style={tw`${"text-white p-top-2"}`}
+                />
+              ),
+            }
+          : {})}
+        text={loadingState ? "" : type === "signup" ? "Sign Up" : "Sign In"}
         onPress={handleSubmit}
         backgroundStyles="bg-amber-500 py-3 rounded-full"
         textStyles="text-center text-white font-bold"
+        tapOpacity={0.9}
       />
 
       <View style={tw`mt-5`}>
