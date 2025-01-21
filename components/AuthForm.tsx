@@ -66,7 +66,7 @@ export default function AuthForm({
 
   useEffect(
     function () {
-      console.log(errors);
+      // console.log(errors);
       setError(errors ? errors : {});
     },
     [errors]
@@ -165,17 +165,12 @@ export default function AuthForm({
       <CustomButton
         {...(loadingState
           ? {
-              icon: (
-                <ActivityIndicator
-                  size={3}
-                  style={tw`${"text-white p-top-2"}`}
-                />
-              ),
+              icon: <ActivityIndicator size={20} style={tw`${"text-white"}`} />,
             }
           : {})}
         text={loadingState ? "" : type === "signup" ? "Sign Up" : "Sign In"}
         onPress={handleSubmit}
-        backgroundStyles="bg-amber-500 py-3 rounded-full"
+        backgroundStyles="bg-amber-500 items-center justify-center rounded-full h-12"
         textStyles="text-center text-white font-bold"
         tapOpacity={0.9}
       />

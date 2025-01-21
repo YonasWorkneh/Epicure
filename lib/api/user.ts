@@ -81,13 +81,13 @@ const signIn = async (email: string, password: string) => {
 
 const fetchUser = async () => {
   const id = (await AsyncStorage.getItem("userId")) || "";
+  if (!id) return {};
 
   try {
     const { data: user, error } = await supabase
       .from("user")
       .select("*")
       .eq("id", JSON.parse(id));
-    console.log(error);
     if (error) {
       throw new Error(
         JSON.stringify({
@@ -97,7 +97,6 @@ const fetchUser = async () => {
         })
       );
     }
-    // console.log()
     return user ? user[0] : null;
   } catch (err: any) {
     throw err;
@@ -112,35 +111,28 @@ const updateUser = async (updates: {
   image?: File;
 }) => {
   try {
+    const id = (await AsyncStorage.getItem("userId")) || "";
+    if (!id) throw new Error("You are not signed in");
     const updateData: any = {};
     const { email, currPass, newPass, image, name } = updates;
     if (name) updateData.name = name;
     if (email) updateData.email = email;
-    const id = (await AsyncStorage.getItem("userId")) || "";
     if (currPass && newPass) {
       const user = await fetchUser();
       if (currPass !== user.password)
-        throw new Error(
-          JSON.stringify({ currPass: "Enter the correct password." })
-        );
+        throw new Error("Please enter your correct password.");
       updateData.password = newPass;
     }
     if (image) {
-      console.log("filed included");
       const { data: profile, error } = await supabase.storage
         .from("User")
         .upload(`${id}`, image, {
           cacheControl: "3600",
           upsert: true,
         });
-      console.log(profile);
+
       if (error) {
-        console.log(error);
-        throw new Error(
-          JSON.stringify({
-            internal: "Error updating image. Please try again.",
-          })
-        );
+        throw new Error("Error while trying to update your profile image.");
       }
       if (profile) {
         updateData.image = profile.fullPath;
@@ -151,23 +143,11 @@ const updateUser = async (updates: {
       .update(updateData)
       .eq("id", JSON.parse(id))
       .select("*");
-    if (error)
-      throw new Error(JSON.stringify({ internal: "Something went wrong" }));
+    if (error) throw new Error("Something went wrong");
     return updatedUser[0];
   } catch (err: any) {
-    console.error(err.message);
+    throw err;
   }
 };
 
-const bookmarkRecipe = async (recipeId: string, email: string) => {
-  try {
-    const { data: user, error } = await supabase
-      .from("user")
-      .select("*")
-      .eq("email", email);
-  } catch (err: any) {
-    console.error(err.message);
-  }
-};
-
-export { signUp, signIn, updateUser, fetchUser, bookmarkRecipe };
+export { signUp, signIn, updateUser, fetchUser };

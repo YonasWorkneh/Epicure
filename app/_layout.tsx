@@ -13,6 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import tw from "twrnc";
 import { TabContextProvider } from "@/contexts/TabContext";
+import FlashMessage from "react-native-flash-message";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -74,6 +75,7 @@ const RootLayout = () => {
           <Stack.Screen name="index" options={{ headerShown: false }} />
         </ScrollView>
       </Stack>
+      <FlashMessage position={"top"} />
     </TabContextProvider>
   );
 };

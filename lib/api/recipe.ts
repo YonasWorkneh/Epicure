@@ -1,5 +1,7 @@
 import { forkify, mealdb } from "@/constants/url";
 import { checkNetwork } from "../utils/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase } from "./supabase";
 
 // Function to make API request to Meal DB based on category
 async function getRecipesByCategory(category: string) {
@@ -104,9 +106,81 @@ async function getCategories() {
   }
 }
 
+async function getBookmarkedRecipes() {
+  try {
+    const id = await AsyncStorage.getItem("userId");
+    if (!id) return [];
+    const { data: userFavorites, error } = await supabase
+      .from("user")
+      .select("favorites")
+      .eq("id", id);
+    if (error) throw new Error("Error trying to add your favorite recipe");
+    const favorites = userFavorites.length
+      ? userFavorites[0].favorites
+        ? JSON.parse(userFavorites[0].favorites)
+        : []
+      : [];
+    return favorites;
+  } catch (err: any) {
+    throw err;
+  }
+}
+
+const setBookmarkedRecipe = async (recipeId?: string, api?: string) => {
+  const id = await AsyncStorage.getItem("userId");
+  try {
+    const { data: userFavorites, error } = await supabase
+      .from("user")
+      .select("favorites")
+      .eq("id", id);
+    if (error) throw new Error("Error trying to add your favorite recipe");
+    console.log(userFavorites);
+    const favorites = userFavorites.length
+      ? userFavorites[0].favorites
+        ? JSON.parse(userFavorites[0].favorites)
+        : []
+      : [];
+    // console.log(favorites);
+    const alreadyFavorite =
+      favorites.findIndex((favorite: any) => favorite.recipeId === recipeId) !==
+      -1;
+    console.log(alreadyFavorite);
+    if (alreadyFavorite)
+      throw new Error("You have already bookmarked this recipe.");
+    const newFavorites = [...favorites, { recipeId, api }];
+    await supabase
+      .from("user")
+      .update({ favorites: JSON.stringify(newFavorites) })
+      .eq("id", id);
+    return true;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+const removeBookmarked = async (recipeId: string) => {
+  try {
+    const id = await AsyncStorage.getItem("userId");
+    const favorites = await getBookmarkedRecipes();
+    const updatedFavorites = favorites.filter(
+      (favorite: any) => favorite.recipeId !== recipeId
+    );
+    await supabase
+      .from("user")
+      .update({ favorites: JSON.stringify(updatedFavorites) })
+      .eq("id", id);
+    return true;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
 export {
   getRecipesByCategory,
   getRecipeDetail,
   getCategories,
   getRecipesSearch,
+  getBookmarkedRecipes,
+  setBookmarkedRecipe,
+  removeBookmarked,
 };

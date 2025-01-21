@@ -2,7 +2,11 @@ import { View, Text, ScrollView } from "react-native";
 
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { getRecipeDetail } from "@/lib/api/recipe";
+import {
+  getBookmarkedRecipes,
+  getRecipeDetail,
+  setBookmarkedRecipe,
+} from "@/lib/api/recipe";
 import {
   ArrowLeftIcon,
   ClockIcon,
@@ -18,6 +22,7 @@ import { useTabContext } from "@/contexts/TabContext";
 import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomModal from "@/components/Modal";
+import { showMessage } from "react-native-flash-message";
 
 export default function recipe() {
   const searchParams = useLocalSearchParams();
@@ -43,7 +48,30 @@ export default function recipe() {
 
   async function handleBookmark() {
     const id = await AsyncStorage.getItem("userId");
-    if (!id) setShowModal(true);
+    if (!id) {
+      setShowModal(true);
+      return;
+    }
+    try {
+      const bookmarked = await setBookmarkedRecipe(
+        recipe?.id,
+        Array.isArray(api) ? api[0] : api
+      );
+      if (bookmarked) {
+        setIsFavourite(true);
+        showMessage({
+          message: `Succesfully adde to your favorite recipes.`,
+          backgroundColor: "rgb(245 158 11)",
+          color: "#fff",
+          statusBarHeight: 40,
+        });
+      }
+    } catch (err: any) {
+      showMessage({
+        message: err.message,
+        type: "danger",
+      });
+    }
   }
   function onOpenDirectionLink() {
     openBrowserAsync(recipe?.sourceUrl ? recipe?.sourceUrl : "");
@@ -99,7 +127,6 @@ export default function recipe() {
             if (key === "idMeal") recipeObject.id = recipeDetail[key];
             if (key.includes("Ingredient") && recipeDetail[key]) {
               const index = +key.slice(key.lastIndexOf("t") + 1);
-              console.log(index);
               recipeObject.ingredients[index - 1] =
                 recipeDetail[`strMeasure${index}`] + " " + recipeDetail[key];
             }
@@ -126,6 +153,27 @@ export default function recipe() {
 
     getRecipe();
   }, [id, api]);
+
+  useEffect(
+    function () {
+      const checkBookmarkStatus = async () => {
+        try {
+          const bookmarked = await getBookmarkedRecipes();
+          const isAlreadyBookmarked =
+            bookmarked.findIndex(
+              (bookmark: any) => bookmark.recipeId === recipe?.id
+            ) !== -1;
+          setTimeout(() => {
+            console.log(isAlreadyBookmarked);
+            if (isAlreadyBookmarked) setIsFavourite(true);
+          }, 1000);
+        } catch (err) {}
+      };
+      console.log("recipeId: " + recipe?.id);
+      checkBookmarkStatus();
+    },
+    [recipe, id, isFavourite]
+  );
 
   if (!recipe) return null;
   return (
@@ -161,6 +209,7 @@ export default function recipe() {
           }
           backgroundStyles={`absolute top-8 right-5 bg-white w-10 h-10 rounded-full flex-row items-center justify-center`}
           onPress={() => handleBookmark()}
+          key={Array.isArray(id) ? id[0] : id}
         />
       </View>
       {/* Meal general Info */}
@@ -195,7 +244,7 @@ export default function recipe() {
           <View style={tw`py-2 flex-row items-center gap-10 w-100`}>
             <Animated.View
               entering={FadeInDown.duration(300)}
-              style={tw`bg-amber-500/80 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
+              style={tw`bg-amber-500 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
             >
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center `}
@@ -208,7 +257,7 @@ export default function recipe() {
             </Animated.View>
             <Animated.View
               entering={FadeInDown.duration(400)}
-              style={tw`bg-amber-500/80 rounded-[2rem] items-center justify-center py-4 pt-2 px-2 h-26`}
+              style={tw`bg-amber-500 rounded-[2rem] items-center justify-center py-4 pt-2 px-2 h-26`}
             >
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
@@ -221,7 +270,7 @@ export default function recipe() {
             </Animated.View>
             <Animated.View
               entering={FadeInDown.duration(500)}
-              style={tw`bg-amber-500/80 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
+              style={tw`bg-amber-500 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
             >
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
@@ -234,7 +283,7 @@ export default function recipe() {
             </Animated.View>
             <Animated.View
               entering={FadeInDown.duration(600)}
-              style={tw`bg-amber-500/80 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
+              style={tw`bg-amber-500 rounded-[2rem] items-center py-4 pt-2 px-2 h-26`}
             >
               <View
                 style={tw`bg-gray-50/80 w-10 h-10 rounded-full flex-row items-center justify-center`}
@@ -272,7 +321,10 @@ export default function recipe() {
           {/* Cook detail link */}
           <View style={tw`p-8 px-4 h-40 items-center justify center mb-20`}>
             <Text
-              style={[tw`text-center`, { fontFamily: "Diphylleia-Regular" }]}
+              style={[
+                tw`text-center mb-2`,
+                { fontFamily: "Diphylleia-Regular" },
+              ]}
             >
               This recipe is carefully designed by{" "}
               <Text style={tw`text-amber-500 text-center`}>

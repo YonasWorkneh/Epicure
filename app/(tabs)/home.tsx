@@ -19,7 +19,7 @@ import MenuIcon from "@/components/MenuIcon";
 import Loader from "@/components/Loader";
 import { checkNetwork, mealForkify, mealObject } from "@/lib/utils/utils";
 import { fetchUser } from "@/lib/api/user";
-import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 
 interface User {
   id: number;
@@ -88,9 +88,7 @@ export default function home() {
       try {
         const user = await fetchUser();
         setActiveUser(user);
-      } catch (err: any) {
-        console.error(err.message);
-      }
+      } catch (err: any) {}
     };
     getUser();
   }, []);
@@ -122,7 +120,7 @@ export default function home() {
           <Image
             source={
               activeUser.image
-                ? { uri: activeUser.image } // If an image is selected, use its URI
+                ? { uri: activeUser.image } //user uploaded image
                 : require("../../assets/images/avatar.png") // Fallback to default
             }
             style={tw`w-15 h-15 rounded-full`}

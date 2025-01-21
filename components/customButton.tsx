@@ -10,6 +10,7 @@ type ButtonProps = {
   textStyles?: string;
   textFont?: string;
   tapOpacity?: number;
+  ref?: React.RefObject<any>;
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -20,9 +21,11 @@ const CustomButton: React.FC<ButtonProps> = ({
   icon,
   textFont,
   tapOpacity,
+  ref,
 }) => {
   return (
     <TouchableOpacity
+      ref={ref}
       style={tw`${backgroundStyles ? backgroundStyles : ""}`}
       onPress={onPress}
       activeOpacity={tapOpacity}

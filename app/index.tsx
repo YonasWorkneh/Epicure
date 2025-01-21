@@ -1,6 +1,6 @@
 import tw from "twrnc";
 import { View, Text, Image, StatusBar } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import images from "../constants/images";
 import { useRouter } from "expo-router";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
@@ -16,10 +16,13 @@ export default function index() {
   const outerRingPadding = useSharedValue(0);
   const innerRingPadding = useSharedValue(0);
   const router = useRouter();
+  const [isFirstTime, setIsFirstTime] = useState(true);
 
   useEffect(function () {
     const checkIfFirstTime = async () => {
-      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
+      const hasLaunched = await AsyncStorage.getItem("userId");
+      if (!hasLaunched) await AsyncStorage.setItem("hasLaunched", "true");
+      else setIsFirstTime(false);
       // if (hasLaunched) router.push("/(tabs)/home");
     };
     checkIfFirstTime();
@@ -80,8 +83,7 @@ export default function index() {
         <CustomButton
           text="Get Started"
           onPress={() => {
-            router.push("/(auth)/signup");
-            AsyncStorage.setItem("hasLaunched", "true");
+            router.push(isFirstTime ? "/(auth)/signup" : "/(tabs)/home");
           }}
           backgroundStyles="bg-black w-full text-white py-2 px-15 rounded-full"
           textStyles="text-center text-white text-m"

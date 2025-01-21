@@ -12,6 +12,7 @@ import { signUp } from "@/lib/api/user";
 import CustomButton from "@/components/CustomButton";
 import AuthForm from "@/components/AuthForm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
 
 interface SignUpErrors {
   email?: string;
@@ -31,9 +32,15 @@ export default function signup() {
       setSigningUp(true);
       const res = await signUp(email, password);
       await AsyncStorage.setItem("userId", JSON.stringify(res.id));
-      router.navigate("/(tabs)/home");
+      showMessage({
+        message: `Welcome to Epicure our new user. Please sign in to your account to get the most out of our app.`,
+        backgroundColor: "rgb(245 158 11)",
+        color: "#fff",
+        statusBarHeight: 40,
+        duration: 5000,
+      });
+      router.navigate("/(auth)/signin");
       clear();
-      return res;
     } catch (err: any) {
       const errMessage = JSON.parse(err.message);
       setSignUpErrors(errMessage);

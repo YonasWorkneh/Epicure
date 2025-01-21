@@ -12,6 +12,7 @@ import { signIn } from "@/lib/api/user";
 import CustomButton from "@/components/CustomButton";
 import AuthForm from "@/components/AuthForm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showMessage } from "react-native-flash-message";
 
 interface SignUpErrors {
   email?: string;
@@ -32,10 +33,9 @@ export default function signup() {
     try {
       setSigningIn(true);
       const res = await signIn(email, password);
-      router.navigate("/(tabs)/home");
       await AsyncStorage.setItem("userId", JSON.stringify(res.id));
       clear();
-      return res;
+      router.replace("/(tabs)/home");
     } catch (err: any) {
       const errMessage = JSON.parse(err.message);
       setSignUpErrors(errMessage);
