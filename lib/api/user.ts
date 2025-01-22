@@ -108,42 +108,64 @@ const updateUser = async (updates: {
   email?: string;
   currPass?: string;
   newPass?: string;
-  image?: File;
+  image?: any;
 }) => {
   try {
-    const id = (await AsyncStorage.getItem("userId")) || "";
-    if (!id) throw new Error("You are not signed in");
+    // Fetch userId from AsyncStorage
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) throw new Error("You are not signed in");
+
     const updateData: any = {};
+    // console.log(updates);
     const { email, currPass, newPass, image, name } = updates;
+
+    // Update name and email if provided
     if (name) updateData.name = name;
     if (email) updateData.email = email;
+
+    // Handle password update
     if (currPass && newPass) {
-      const user = await fetchUser();
+      const user = await fetchUser(); // Ensure this fetchUser function works correctly
       if (currPass !== user.password)
         throw new Error("Please enter your correct password.");
       updateData.password = newPass;
     }
-    if (image) {
-      const { data: profile, error } = await supabase.storage
-        .from("User")
-        .upload(`${id}`, image, {
-          cacheControl: "3600",
-          upsert: true,
-        });
 
-      if (error) {
-        throw new Error("Error while trying to update your profile image.");
-      }
+    // Handle image upload
+    if (image) {
+      if (!image.uri) throw new Error("Invalid image data");
+      console.log(image);
+
+      // Fetch and upload image
+      const response = await fetch(image.uri);
+      const blob = await response.blob();
+
+      const { data: profile, error: uploadError } = await supabase.storage
+        .from("User") // Replace with your actual bucket name
+        .upload(`profile-${userId}/${image.fileName}`, blob);
+      // console.log(profile);
+      // console.log(uploadError);
+
+      // return;
+      if (uploadError) throw new Error("Error while uploading profile image");
+      // console.log(profile);
       if (profile) {
-        updateData.image = profile.fullPath;
+        const { data } = supabase.storage
+          .from("User") // Replace with your actual bucket name
+          .getPublicUrl(profile.path);
+        updateData.image = data.publicUrl;
       }
     }
-    const { data: updatedUser, error } = await supabase
+
+    // Update user data in Supabase
+    const { data: updatedUser, error: updateError } = await supabase
       .from("user")
       .update(updateData)
-      .eq("id", JSON.parse(id))
+      .eq("id", userId)
       .select("*");
-    if (error) throw new Error("Something went wrong");
+
+    if (updateError) throw new Error("Something went wrong during user update");
+
     return updatedUser[0];
   } catch (err: any) {
     throw err;

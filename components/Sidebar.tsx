@@ -1,6 +1,6 @@
 import images from "@/constants/images";
-import { Link, useRouter } from "expo-router";
-import React from "react";
+import { Link, router, useRouter } from "expo-router";
+import React, { act, useEffect } from "react";
 import { View, Text, Image, ScrollView, SafeAreaView } from "react-native";
 import {
   ClipboardDocumentIcon,
@@ -20,8 +20,8 @@ import CustomButton from "./CustomButton";
 import { useTabContext } from "@/contexts/TabContext";
 
 const Sidebar = () => {
-  const { setMenuOpened } = useTabContext();
-  const router = useRouter();
+  const { activeTab, setMenuOpened, setActiveTab, setShowTabBar } =
+    useTabContext();
 
   return (
     <Animated.View
@@ -48,15 +48,33 @@ const Sidebar = () => {
           <SidebarLink
             title="home"
             icon={<HomeIcon style={tw`text-black`} size={20} />}
-            isActive={true}
+            isActive={activeTab === "home"}
+            navigateTo={() => {
+              router.replace("/(tabs)/home");
+              setMenuOpened(false);
+              setActiveTab("home");
+            }}
           />
           <SidebarLink
             title="favorite recipes"
             icon={<HeartIcon style={tw`text-black`} size={20} />}
+            isActive={activeTab === "favorites"}
+            navigateTo={() => {
+              router.replace("/(tabs)/favorites");
+              setMenuOpened(false);
+              setActiveTab("favorites");
+            }}
           />
           <SidebarLink
             title="profile"
             icon={<UserIcon style={tw`text-black`} size={20} />}
+            isActive={activeTab === "profile"}
+            navigateTo={() => {
+              router.replace("/(tabs)/profile");
+              setMenuOpened(false);
+              setShowTabBar(false);
+              setActiveTab("profile");
+            }}
           />
           <SidebarLink
             title="shopping list"

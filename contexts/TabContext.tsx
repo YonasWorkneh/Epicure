@@ -7,6 +7,8 @@ interface TabContextValue {
   activeTab: string;
   menuOpened: boolean;
   showTabBar: boolean;
+  loggedOut: boolean;
+  setLoggedOut: (logout: boolean) => void;
   setShowTabBar: (opened: boolean) => void;
   setMenuOpened: (opened: boolean) => void;
   setActiveTab: (tab: string) => void;
@@ -22,13 +24,15 @@ export const TabContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [activeTab, setActiveTab] = useState<string>("");
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
   const [showTabBar, setShowTabBar] = useState<boolean>(true);
-
+  const [loggedOut, setLoggedOut] = useState<boolean>(true);
   return (
     <TabContext.Provider
       value={{
         activeTab,
         menuOpened,
         showTabBar,
+        loggedOut,
+        setLoggedOut,
         setShowTabBar,
         setMenuOpened,
         setActiveTab,

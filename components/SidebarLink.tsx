@@ -6,17 +6,20 @@ type SidebarLinkProps = {
   title: string;
   icon: React.ReactNode;
   isActive?: boolean;
+  navigateTo?: () => void;
 };
 export default function SidebarLink({
   title,
   icon,
   isActive,
+  navigateTo,
 }: SidebarLinkProps) {
   return (
     <TouchableOpacity
       style={tw`flex flex-row items-center gap-3 mb-4 p-2 rounded-lg ${
         isActive ? "bg-white/20" : ""
       }`}
+      onPress={navigateTo}
     >
       {icon}
       <Text style={[tw`text-sm `, { fontFamily: "Poppins-SemiBold" }]}>

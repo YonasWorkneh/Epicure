@@ -26,7 +26,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchUser, updateUser } from "@/lib/api/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
-import Loader from "@/components/Loader";
+
 
 export default function profile() {
   const [name, setName] = useState("");
@@ -37,10 +37,14 @@ export default function profile() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [nameFocus, setNameFocus] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
+  const [currPassFocus, setCurrFocus] = useState(false);
+  const [newPassFocus, setNewPassFocus] = useState(false);
 
   const [profileUri, setProfileUri] = useState("");
-  const { setShowTabBar } = useTabContext();
-  const [clear, setClear] = useState(false);
+  const { loggedOut, setLoggedOut, setShowTabBar, setActiveTab } =
+    useTabContext();
 
   const openGallery = async () => {
     // Request permission to access the media library
@@ -78,7 +82,9 @@ export default function profile() {
       return;
     }
     await AsyncStorage.removeItem("userId");
+    setLoggedOut(true);
     setError("no user");
+    setShowTabBar(true);
     router.replace(`/(tabs)/home?clear=${true}`);
   };
 
@@ -148,11 +154,11 @@ export default function profile() {
       };
       getUser();
     },
-    [clear]
+    [loggedOut]
   );
 
   return (
-    <SafeAreaView key={`${clear}`}>
+    <SafeAreaView>
       <ScrollView>
         {/* header */}
         <View style={tw`flex-row items-center justify-between p-2`}>
@@ -162,6 +168,7 @@ export default function profile() {
               onPress={() => {
                 setShowTabBar(true);
                 router.back();
+                setActiveTab("home");
               }}
             />
             <Text style={tw`font-bold text-xl text-amber-500`}>Profile</Text>
@@ -216,7 +223,7 @@ export default function profile() {
               backgroundStyles="bg-amber-500 py-2 rounded-[4rem] p-2 px-6"
               text="Create account"
               textStyles="text-white text-xs"
-              onPress={() => router.navigate("/(auth)/signup")}
+              onPress={() => router.replace("/(auth)/signup")}
             />
           </View>
         ) : (
@@ -249,22 +256,34 @@ export default function profile() {
                 <Text style={tw`font-bold text-amber-500`}>Full name</Text>
                 <TextInput
                   style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0`,
+                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
+                      name || nameFocus
+                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                        : ""
+                    }`,
                     { boxShadow: "0px 0px 10px #807a7a28" },
                   ]}
                   value={name}
                   onChangeText={setName}
+                  onFocus={() => setNameFocus(true)}
+                  onBlur={() => setNameFocus(false)}
                 />
               </View>
               <View>
                 <Text style={tw`font-bold text-amber-500`}>Email</Text>
                 <TextInput
                   style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0`,
+                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
+                      email || emailFocus
+                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                        : ""
+                    }`,
                     { boxShadow: "0px 0px 10px #807a7a28" },
                   ]}
                   value={email}
                   onChangeText={setEmail}
+                  onFocus={() => setEmailFocus(true)}
+                  onBlur={() => setEmailFocus(false)}
                 />
               </View>
               <View>
@@ -273,22 +292,34 @@ export default function profile() {
                 </Text>
                 <TextInput
                   style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0`,
+                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
+                      currPass || currPassFocus
+                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                        : ""
+                    }`,
                     { boxShadow: "0px 0px 10px #807a7a28" },
                   ]}
                   value={currPass}
                   onChangeText={setCurrPass}
+                  onFocus={() => setCurrFocus(true)}
+                  onBlur={() => setCurrFocus(false)}
                 />
               </View>
               <View>
                 <Text style={tw`font-bold text-amber-500`}>New Password</Text>
                 <TextInput
                   style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0`,
+                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
+                      newPass || newPassFocus
+                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                        : ""
+                    }`,
                     { boxShadow: "0px 0px 10px #807a7a28" },
                   ]}
                   value={newPass}
                   onChangeText={setNewPass}
+                  onFocus={() => setNewPassFocus(true)}
+                  onBlur={() => setNewPassFocus(false)}
                 />
               </View>
               {/* apply-button */}

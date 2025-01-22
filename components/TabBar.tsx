@@ -10,7 +10,7 @@ export default function TabBar({
   descriptors,
   navigation,
 }: BottomTabBarProps) {
-  const { showTabBar } = useTabContext();
+  const { showTabBar, setActiveTab, setShowTabBar } = useTabContext();
   return (
     <View
       style={[
@@ -44,7 +44,9 @@ export default function TabBar({
             target: route.key,
             canPreventDefault: true,
           });
-
+          const tab = route.key.slice(0, route.key.indexOf("-"));
+          setActiveTab(tab);
+          if (tab === "profile") setShowTabBar(false);
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name, route.params);
           }

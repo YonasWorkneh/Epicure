@@ -37,11 +37,12 @@ export default function recipe() {
     cookingTime: number;
     sourceUrl: string;
     imageUrl: string;
+    bookmarkStatus?: boolean;
   };
 
   const router = useRouter();
   const [recipe, setRecipe] = useState<Recipe>();
-  const { setShowTabBar } = useTabContext();
+  const { setShowTabBar, setActiveTab } = useTabContext();
   const [isFavourite, setIsFavourite] = useState(false);
   const randomCal = Math.floor(Math.random() * (800 - 150 + 1)) + 150;
   const [showModal, setShowModal] = useState(false);
@@ -65,6 +66,7 @@ export default function recipe() {
           color: "#fff",
           statusBarHeight: 40,
         });
+        if (recipe) recipe.bookmarkStatus = true;
       }
     } catch (err: any) {
       showMessage({
@@ -145,7 +147,7 @@ export default function recipe() {
         }
 
         // Only update state if the recipe is different
-        setRecipe(recipeObject);
+        setRecipe({ ...recipeObject, bookmarkStatus: isFavourite });
       } catch (err: any) {
         // console.error(err.message);
       }
@@ -169,10 +171,9 @@ export default function recipe() {
           }, 1000);
         } catch (err) {}
       };
-      console.log("recipeId: " + recipe?.id);
       checkBookmarkStatus();
     },
-    [recipe, id, isFavourite]
+    [id, recipe?.bookmarkStatus]
   );
 
   if (!recipe) return null;
@@ -196,6 +197,7 @@ export default function recipe() {
           onPress={() => {
             router.back();
             setShowTabBar(true);
+            setActiveTab("home");
           }}
         />
         <CustomButton

@@ -2,7 +2,7 @@ import { View, Text, Image, ScrollView, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import images from "../../constants/images";
 import SearchBar from "@/components/SearchBar";
 import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
@@ -20,6 +20,7 @@ import Loader from "@/components/Loader";
 import { checkNetwork, mealForkify, mealObject } from "@/lib/utils/utils";
 import { fetchUser } from "@/lib/api/user";
 import { useLocalSearchParams } from "expo-router/build/hooks";
+import { useTabContext } from "@/contexts/TabContext";
 
 interface User {
   id: number;
@@ -42,6 +43,7 @@ export default function home() {
   });
   const searchParams = useLocalSearchParams();
   const { clear } = searchParams;
+  const { setActiveTab, setShowTabBar } = useTabContext();
 
   const handleSearch = async (key: string, reset?: boolean) => {
     if (reset) {
@@ -91,6 +93,7 @@ export default function home() {
       } catch (err: any) {}
     };
     getUser();
+    setActiveTab("home");
   }, []);
 
   useEffect(
@@ -116,16 +119,22 @@ export default function home() {
         >
           Epicure
         </Text>
-        <Link href={"./profile"}>
-          <Image
-            source={
-              activeUser.image
-                ? { uri: activeUser.image } //user uploaded image
-                : require("../../assets/images/avatar.png") // Fallback to default
-            }
-            style={tw`w-15 h-15 rounded-full`}
-          />
-        </Link>
+        <CustomButton
+          icon={
+            <Image
+              source={
+                activeUser.image
+                  ? { uri: activeUser.image } //user uploaded image
+                  : require("../../assets/images/avatar.png") // Fallback to default
+              }
+              style={tw`w-15 h-15 rounded-full`}
+            />
+          }
+          onPress={() => {
+            router.push("/(tabs)/profile");
+            setShowTabBar(false);
+          }}
+        />
       </View>
 
       {/* main-content */}

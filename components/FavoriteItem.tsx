@@ -19,10 +19,12 @@ import { router } from "expo-router";
 import tw from "twrnc";
 import { removeBookmarked } from "@/lib/api/recipe";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import { useTabContext } from "@/contexts/TabContext";
 
 type FavoriteItemProps = {
   title?: string;
   src?: any;
+  link?: any;
   id?: string;
   api?: string;
   publisher?: string;
@@ -34,12 +36,14 @@ const FavouriteItem = ({
   title,
   src,
   id,
+  link,
   api,
   publisher,
   duration,
   removeHandler,
 }: FavoriteItemProps) => {
   const [showDropDown, setShowDropDown] = useState(false);
+  const { setShowTabBar } = useTabContext();
   const handleRemove = async (id: string) => {
     try {
       await removeBookmarked(id);
@@ -53,7 +57,7 @@ const FavouriteItem = ({
   const handleShare = async () => {
     try {
       const result = await Share.share({
-        message: "Check out Epicure recipe app: exp://192.168.1.3:8081",
+        message: `Check out ${title} recipe from epicure app: ${link}`,
       });
 
       if (result.action === Share.sharedAction) {
@@ -95,14 +99,14 @@ const FavouriteItem = ({
             {title}
           </Text>
           <Text style={tw`text-black/30 text-[12px]`}>{publisher}</Text>
-          <Text
-            style={tw`text-right  flex-row gap-8 pt-2 items-center justify-center text-center`}
-          >
-            <StarIcon size={16} style={tw`text-amber-500 text-center`} />
-            <Text style={tw`mt-[-1rem] text-center`}>
+          <View style={tw`text-right  flex-row gap-1 pt-2 items-center`}>
+            <View>
+              <StarIcon size={16} style={tw`text-amber-500`} />
+            </View>
+            <Text style={tw``}>
               {(Math.random() * (4 - 3 + 1) + 3).toFixed(1)}
             </Text>
-          </Text>
+          </View>
         </View>
       </View>
       {/* action button with dropdown menu */}
@@ -115,11 +119,12 @@ const FavouriteItem = ({
         />
         {showDropDown && (
           <View
-            style={tw`${"absolute z-auto bottom-[-6.5rem] right-2 bg-white border border-gray-300 w-35 rounded-lg"}`}
+            style={tw`${"absolute z-50 bottom-[-6.5rem] right-2 bg-white border border-gray-300 w-35 rounded-lg"}`}
           >
             <TouchableOpacity
               style={tw`${"flex-row gap-2 mb-2 border-b border-gray-200 p-2"}`}
               onPress={() => {
+                setShowTabBar(false);
                 router.navigate(`/(tabs)/recipe?id=${id}&api=${api}`);
                 setShowDropDown(false);
               }}

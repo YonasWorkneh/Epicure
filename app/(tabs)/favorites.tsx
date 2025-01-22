@@ -3,14 +3,16 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tw from "twrnc";
 import CustomButton from "@/components/CustomButton";
-import { Link, router } from "expo-router";
-import images from "../../constants/images";
+import { router } from "expo-router";
+
 import MenuIcon from "@/components/MenuIcon";
 import SearchBar from "@/components/SearchBar";
 import { getBookmarkedRecipes, getRecipeDetail } from "@/lib/api/recipe";
 import Loader from "@/components/Loader";
 import FavouriteItem from "@/components/FavoriteItem";
 import { showMessage } from "react-native-flash-message";
+import { useTabContext } from "@/contexts/TabContext";
+import { fetchUser } from "@/lib/api/user";
 
 interface Recipe {
   id?: string;
@@ -20,74 +22,113 @@ interface Recipe {
   api?: string;
 }
 
+interface User {
+  id: number;
+  name?: string;
+  email: string;
+  password: string;
+  image?: string;
+  favorites?: string;
+}
+
 export default function favorites() {
   const [error, setError] = useState("");
   const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { loggedOut, setShowTabBar } = useTabContext();
+  const [activeUser, setActiveUser] = useState<User>({
+    id: 0,
+    email: "",
+    password: "",
+  });
 
-  useEffect(function () {
-    const getFavorites = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getBookmarkedRecipes();
-        if (!data.length) setError("No Bookmarked recipes.");
-        const promises = data.map(async (item: any) => {
-          return getRecipeDetail(item.recipeId, item.api);
-        });
+  useEffect(
+    function () {
+      const getFavorites = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getBookmarkedRecipes();
+          if (!data.length) setError("No Bookmarked recipes.");
+          const promises = data.map(async (item: any) => {
+            return getRecipeDetail(item.recipeId, item.api);
+          });
 
-        // Wait for all promises to resolve
-        const results = await Promise.all(promises);
-        const modifiedResults = results.map((result: any) => {
-          const isMealDb = Object.keys(result).some((key: any) =>
-            key.includes("str")
-          );
-          if (isMealDb)
+          // Wait for all promises to resolve
+          const results = await Promise.all(promises);
+          const modifiedResults = results.map((result: any) => {
+            const isMealDb = Object.keys(result).some((key: any) =>
+              key.includes("str")
+            );
+            if (isMealDb)
+              return {
+                title:
+                  result.strMeal.length > 20
+                    ? `${result.strMeal.slice(0, 20)}-`
+                    : result.strMeal,
+                src: result.strMealThumb,
+                id: result.idMeal,
+                publisher: "meal Db",
+                api: "mealDb",
+              };
             return {
               title:
-                result.strMeal.length > 20
-                  ? `${result.strMeal.slice(0, 20)}-`
-                  : result.strMeal,
-              src: result.strMealThumb,
-              id: result.idMeal,
-              publisher: "meal Db",
-              api: "mealDb",
+                result.title.length > 10
+                  ? `${result.title.slice(0, 15)}-`
+                  : result.title,
+              src: result.image_url,
+              id: result.id,
+              publisher: result.publisher,
+              api: "forkify",
             };
-          return {
-            title:
-              result.title.length > 10
-                ? `${result.title.slice(0, 15)}-`
-                : result.title,
-            src: result.image_url,
-            id: result.id,
-            publisher: result.publisher,
-            api: "forkify",
-          };
-        });
-        console.log(modifiedResults);
-        if (!modifiedResults.length) {
-          setError("no favorites");
+          });
+          console.log(modifiedResults);
+          if (!modifiedResults.length) {
+            setError("no favorites");
+          }
+          setFavoriteRecipes(modifiedResults);
+        } catch (err: any) {
+          showMessage({
+            type: "danger",
+            message: "Error trying to fetch you favorite recipes . ",
+          });
+        } finally {
+          setTimeout(() => setIsLoading(false), 1000);
         }
-        setFavoriteRecipes(modifiedResults);
-      } catch (err: any) {
-        showMessage({
-          type: "danger",
-          message: "Error trying to fetch you favorite recipes . ",
-        });
-      } finally {
-        setTimeout(() => setIsLoading(false), 1000);
-      }
-    };
-    getFavorites();
-  }, []);
+      };
+      const getUser = async () => {
+        try {
+          const user = await fetchUser();
+          setActiveUser(user);
+        } catch (err: any) {}
+      };
+      getUser();
+      getFavorites();
+    },
+    [loggedOut]
+  );
+
   return (
     <SafeAreaView>
       {/* header */}
       <View style={tw`px-4 flex flex-row  justify-between items-center`}>
         <CustomButton icon={<MenuIcon />} />
         <Text style={tw`font-bold text-2xl text-amber-500`}>Epicure</Text>
-        <Link href={"./profile"}>
-          <Image source={images.avatar} style={tw`w-10 h-10`} />
-        </Link>
+        <CustomButton
+          icon={
+            <Image
+              source={
+                activeUser.image
+                  ? { uri: activeUser.image } //user uploaded image
+                  : require("../../assets/images/avatar.png") // Fallback to default
+              }
+              style={tw`w-15 h-15 rounded-full`}
+            />
+          }
+          onPress={() => {
+            router.push("/(tabs)/profile");
+            setShowTabBar(false);
+          }}
+        />
       </View>
       <View style={tw`px-4`}>
         <Text
