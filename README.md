@@ -1,6 +1,5 @@
 # Welcome to your Epicure recipe app 👋
-
-This is a recipe application created with  [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The inspiration to make this app come from noticing the absence of a platform that can offer you a detailed recipe information. And that is how hagurash ( remember not epicure) a recipe website I made as part of IP II group php assignment was born and back then It just didn’t feel right to make it a website such platform should be available on the go any where you are helping passionate people about food make the most out of the platform hence the name shift Epicure(a person who takes particular pleasure in fine food and drink).
 
 ## Get started
 
@@ -34,6 +33,10 @@ npm run reset-project
 ```
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+
+Video Demo
+>[!IMPORTANT]
+>here is a video demo of this application [[here](https://docs.google.com/presentation/d/1fYSPUhvcgNUkDhMUexoxtBYGL-hkLwP2rAlv8t9O6xI/edit#slide=id.g30ff370612f_2_122)](https://drive.google.com/file/d/1AUQg6Uc4fCRRhgFjEV8tcPBpO4oYcH1g/view?usp=sharing).
 
 ## Learn more
 
