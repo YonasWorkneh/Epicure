@@ -13,6 +13,7 @@ import CustomButton from "@/components/CustomButton";
 import AuthForm from "@/components/AuthForm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
+import { useTabContext } from "@/contexts/TabContext";
 
 interface SignUpErrors {
   email?: string;
@@ -25,6 +26,7 @@ export default function signup() {
   const [signingIn, setSigningIn] = useState(false);
   const router = useRouter();
   const [signInErrors, setSignUpErrors] = useState<SignUpErrors>({});
+  const { setShowTabBar } = useTabContext();
   const handleSignIn = async (
     email: string,
     password: string,
@@ -35,6 +37,7 @@ export default function signup() {
       const res = await signIn(email, password);
       await AsyncStorage.setItem("userId", JSON.stringify(res.id));
       clear();
+      setShowTabBar(true);
       router.replace("/(tabs)/home");
     } catch (err: any) {
       const errMessage = JSON.parse(err.message);
@@ -58,7 +61,10 @@ export default function signup() {
       <ScrollView>
         <CustomButton
           text="Skip"
-          onPress={() => router.push("/(tabs)/home")}
+          onPress={() => {
+            setShowTabBar(true);
+            router.push("/(tabs)/home");
+          }}
           backgroundStyles="px-4 py-4 bg-white w-rfull"
           textStyles="text-amber-500 font-bold text-right"
         />
