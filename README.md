@@ -1,5 +1,5 @@
-# Welcome to your Epicure recipe app 👋
-The inspiration to make this app come from noticing the absence of a platform that can offer you a detailed recipe information. And that is how hagurash ( remember not epicure) a recipe website I made as part of IP II group php assignment was born and back then It just didn’t feel right to make it a website such platform should be available on the go any where you are helping passionate people about food make the most out of the platform hence the name shift Epicure(a person who takes particular pleasure in fine food and drink).
+# Welcome to Epicure recipe app 🍔🥤
+The inspiration to make this app come from noticing the absence of a platform that can offer you a detailed recipe information. And that is how hagurash ( remember not epicure) a recipe website I made as part of IP II group php assignment was born and back then It just didn’t feel right to make it a website such platform should be available on the go any where you are helping passionate people about food make the most out of the platform hence the name shift Epicure(a person who takes particular pleasure in fine food and drink). 
 
 ## Get started
 
