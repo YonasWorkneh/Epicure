@@ -28,7 +28,7 @@ const SearchBar: React.FC<SearchProps> = ({
   }
   return (
     <View
-      style={tw`flex flex-row items-center border border-gray-300 bg-amber-500/5 rounded-full px-3 py-1 border ${
+      style={tw`flex flex-row items-center border border-gray-300 bg-amber-500/5 rounded-full px-3 py-2 border ${
         isFocused ? "border-gray-600" : ""
       } ${backgroundStyles ? backgroundStyles : ""}`}
     >

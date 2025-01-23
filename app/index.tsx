@@ -23,7 +23,8 @@ export default function index() {
       const hasLaunched = await AsyncStorage.getItem("userId");
       if (!hasLaunched) await AsyncStorage.setItem("hasLaunched", "true");
       else setIsFirstTime(false);
-      // if (hasLaunched) router.push("/(tabs)/home");
+      // await AsyncStorage.removeItem("hasLaunched");
+      if (hasLaunched) router.push("/(tabs)/home");
     };
     checkIfFirstTime();
   }, []);
