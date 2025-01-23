@@ -1,6 +1,6 @@
-# Welcome to your Expo app 👋
+# Welcome to your Epicure recipe app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a recipe application created with  [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
 
