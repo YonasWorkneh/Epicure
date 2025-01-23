@@ -102,7 +102,7 @@ async function getCategories() {
     // console.log(categories);
     return categories;
   } catch (err: any) {
-    console.error(err.message);
+    throw err;
   }
 }
 

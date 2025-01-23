@@ -17,10 +17,11 @@ import {
 import RecipeListItem from "@/components/RecipeListItem";
 import MenuIcon from "@/components/MenuIcon";
 import Loader from "@/components/Loader";
-import { checkNetwork, mealForkify, mealObject } from "@/lib/utils/utils";
+import { mealForkify, mealObject } from "@/lib/utils/utils";
 import { fetchUser } from "@/lib/api/user";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useTabContext } from "@/contexts/TabContext";
+import { showMessage } from "react-native-flash-message";
 
 interface User {
   id: number;
@@ -55,7 +56,10 @@ export default function home() {
       const { fkyRecipes, mdbRecipes } = result;
       setRecipes([...mealForkify(fkyRecipes), ...mealObject(mdbRecipes)]);
     } catch (err: any) {
-      checkNetwork();
+      showMessage({
+        message: "Something went wrong. Please try again",
+        type: "danger",
+      });
     }
   };
   // const fetch active recipe category
@@ -65,7 +69,11 @@ export default function home() {
         const categories = await getCategories();
         setCategories(categories);
       } catch (err: any) {
-        console.error(err.message);
+        showMessage({
+          message:
+            "Something went wrong. Make sure you are connected to the internet.",
+          type: "danger",
+        });
       }
     };
     const getRecipes = async () => {
@@ -76,6 +84,11 @@ export default function home() {
           throw new Error("Invalid recipes");
         setRecipes(mealObject(recipes));
       } catch (err) {
+        showMessage({
+          message:
+            "Something went wrong. Make sure you are connected to the internet.",
+          type: "danger",
+        });
       } finally {
         setIsLoading(false);
       }
