@@ -16,6 +16,8 @@ import {
   ArrowRightStartOnRectangleIcon,
   CameraIcon,
   DocumentMagnifyingGlassIcon,
+  EyeIcon,
+  EyeSlashIcon,
   XMarkIcon,
 } from "react-native-heroicons/solid";
 import CustomButton from "@/components/CustomButton";
@@ -26,7 +28,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchUser, updateUser } from "@/lib/api/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { showMessage } from "react-native-flash-message";
-
 
 export default function profile() {
   const [name, setName] = useState("");
@@ -41,7 +42,8 @@ export default function profile() {
   const [emailFocus, setEmailFocus] = useState(false);
   const [currPassFocus, setCurrFocus] = useState(false);
   const [newPassFocus, setNewPassFocus] = useState(false);
-
+  const [currPassVisibility, setCurrPassVisibility] = useState(false);
+  const [newPassVisibility, setNewPassVisibility] = useState(false);
   const [profileUri, setProfileUri] = useState("");
   const { loggedOut, setLoggedOut, setShowTabBar, setActiveTab } =
     useTabContext();
@@ -290,37 +292,67 @@ export default function profile() {
                 <Text style={tw`font-bold text-amber-500`}>
                   Current Password
                 </Text>
-                <TextInput
-                  style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
-                      currPass || currPassFocus
-                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                <View style={tw`relative`}>
+                  <TextInput
+                    style={tw`bg-white rounded-full p-3 px-4 m-2 mx-0  ${
+                      currPassFocus || currPass
+                        ? "shadow-l border border-amber-500 shadow-amber-500"
                         : ""
-                    }`,
-                    { boxShadow: "0px 0px 10px #807a7a28" },
-                  ]}
-                  value={currPass}
-                  onChangeText={setCurrPass}
-                  onFocus={() => setCurrFocus(true)}
-                  onBlur={() => setCurrFocus(false)}
-                />
+                    }`}
+                    secureTextEntry={!currPassVisibility}
+                    value={currPass}
+                    onChangeText={setCurrPass}
+                    onFocus={() => setCurrFocus(true)}
+                    onBlur={() => setCurrFocus(false)}
+                    textContentType="none"
+                    autoComplete="off"
+                  />
+                  {currPassVisibility ? (
+                    <EyeIcon
+                      style={tw`text-amber-500 absolute right-5 top-[1.2rem] text-sm`}
+                      onPress={() => setCurrPassVisibility((prev) => !prev)}
+                      size={20}
+                    />
+                  ) : (
+                    <EyeSlashIcon
+                      style={tw`text-amber-500 absolute right-5 top-[1.2rem]`}
+                      size={20}
+                      onPress={() => setCurrPassVisibility((prev) => !prev)}
+                    />
+                  )}
+                </View>
               </View>
               <View>
                 <Text style={tw`font-bold text-amber-500`}>New Password</Text>
-                <TextInput
-                  style={[
-                    tw`bg-white rounded-full p-3 px-4 m-2 mx-0 ${
-                      newPass || newPassFocus
-                        ? "shadow-l shadow-amber-500 border border-amber-500"
+                <View style={tw`relative`}>
+                  <TextInput
+                    style={tw`bg-white rounded-full p-3 px-4 m-2 mx-0  ${
+                      newPassFocus || newPass
+                        ? "shadow-l border border-amber-500 shadow-amber-500"
                         : ""
-                    }`,
-                    { boxShadow: "0px 0px 10px #807a7a28" },
-                  ]}
-                  value={newPass}
-                  onChangeText={setNewPass}
-                  onFocus={() => setNewPassFocus(true)}
-                  onBlur={() => setNewPassFocus(false)}
-                />
+                    }`}
+                    secureTextEntry={!newPassVisibility}
+                    value={newPass}
+                    onChangeText={setNewPass}
+                    onFocus={() => setNewPassFocus(true)}
+                    onBlur={() => setNewPassFocus(false)}
+                    textContentType="none"
+                    autoComplete="off"
+                  />
+                  {currPassVisibility ? (
+                    <EyeIcon
+                      style={tw`text-amber-500 absolute right-5 top-[1.2rem] text-sm`}
+                      onPress={() => setNewPassVisibility((prev) => !prev)}
+                      size={20}
+                    />
+                  ) : (
+                    <EyeSlashIcon
+                      style={tw`text-amber-500 absolute right-5 top-[1.2rem]`}
+                      size={20}
+                      onPress={() => setNewPassVisibility((prev) => !prev)}
+                    />
+                  )}
+                </View>
               </View>
               {/* apply-button */}
               <View style={tw`p-2 flex-row justify-center items-center`}>

@@ -23,7 +23,7 @@ export default function CategoryItem({
       onPress={() => onSetCategory(name)}
     >
       <Animated.View
-        style={tw`items-center `}
+        style={tw`items-center p-b-2`}
         entering={FadeInDown.delay(index * 100).duration(500)}
       >
         <View style={tw`relative h-10 w-10 bg-amber-500/70 rounded-full`}>
