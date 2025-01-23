@@ -36,7 +36,7 @@ This command will move the starter code to the **app-example** directory and cre
 
 Video Demo
 >[!IMPORTANT]
->here is a video demo of this application [[here](https://docs.google.com/presentation/d/1fYSPUhvcgNUkDhMUexoxtBYGL-hkLwP2rAlv8t9O6xI/edit#slide=id.g30ff370612f_2_122)](https://drive.google.com/file/d/1AUQg6Uc4fCRRhgFjEV8tcPBpO4oYcH1g/view?usp=sharing).
+>here is a video demo of this application [(https://drive.google.com/file/d/1AUQg6Uc4fCRRhgFjEV8tcPBpO4oYcH1g/view?usp=sharing)].
 
 ## Learn more
 
